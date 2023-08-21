@@ -57,7 +57,7 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
     transparencyMode: payload.transparencyMode,
     metallic: payload.metallic,
     roughness: payload.roughness,
-    glossiness: payload.microSurface,
+    //glossiness: payload.microSurface, // @deprecated https://github.com/decentraland/protocol/pull/155
     specularIntensity: payload.specularIntensity,
     emissiveIntensity: payload.emissiveIntensity,
     directIntensity: payload.directIntensity
