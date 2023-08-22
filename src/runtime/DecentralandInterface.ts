@@ -14,8 +14,8 @@ import { ECS6State } from './../types'
 
 import { engine } from '@dcl/ecs'
 
-import * as SignedFetchModule from '~system/SignedFetch'
-import * as EnvironmentApi from '~system/EnvironmentApi'
+//import * as SignedFetchModule from '~system/SignedFetch'
+//import * as EnvironmentApi from '~system/EnvironmentApi'
 
 export namespace AdaptionLayer {
   const state: ECS6State = {
@@ -108,7 +108,7 @@ export namespace AdaptionLayer {
   // RPC
   async function loadModule(moduleName: string) {
     console.log('loadModule', moduleName)
-    switch (moduleName)
+    /*switch (moduleName)
     {
       case '@decentraland/SignedFetchModule':
         return {
@@ -120,7 +120,7 @@ export namespace AdaptionLayer {
           methods: Object.keys(EnvironmentApi).map((e): MethodDescriptor => ({ name: e })),
           rpcHandle: 'environmentApi'
         }
-    }
+    }*/
     const emptyDescriptor: ModuleDescriptor = {
       methods: [],
       rpcHandle: 'empty'

@@ -4,7 +4,7 @@ import { customEval } from "./sandbox"
 import { AdaptionLayer } from "./runtime/DecentralandInterface"
 
 export async function main() {
-  const res = await readFile({ fileName: 'sdk6/game.js' })
+  const res = await readFile({ fileName: 'bin/game.js' })
   var code = new TextDecoder().decode(res.content)
 
   const newDcl = await AdaptionLayer.createDecentralandInterface()
