@@ -3,9 +3,32 @@ import { readFile } from "~system/Runtime"
 import { customEval } from "./sandbox"
 import { AdaptionLayer } from "./runtime/DecentralandInterface"
 
+async function getSceneJsonData(fileName: string): Promise<any> {
+  const res = await readFile({ fileName })
+  var content = new TextDecoder().decode(res.content)
+  return JSON.parse(content) as any
+}
+
+async function getSceneCode(): Promise<string> {
+  const sceneJson = await getSceneJsonData('scene.json')
+
+  // If the runtimeVersion is SDK7, it means that we're developing
+  // otherwise, it means that we're injecting the code on top of a SDK6 Scene (prod)
+  const developerMode = sceneJson.runtimeVersion === '7'
+  let fileName: string = ''
+  if (developerMode) {
+    console.log('SDK7 Adaption Layer - Developer Mode')
+    const devSceneJson = await getSceneJsonData('sdk6-tests/scene.json')
+  } else {
+    fileName = sceneJson.main
+  }
+
+  const res = await readFile({ fileName })
+  return new TextDecoder().decode(res.content)
+}
+
 export async function main() {
-  const res = await readFile({ fileName: 'bin/game.js' })
-  var code = new TextDecoder().decode(res.content)
+  const code = await getSceneCode()
 
   const newDcl = await AdaptionLayer.createDecentralandInterface()
   await customEval(code, { dcl: newDcl })
