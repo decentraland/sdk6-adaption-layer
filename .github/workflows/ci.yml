@@ -24,3 +24,20 @@ jobs:
             bin/index.js
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
           retention-days: 90
+      - uses: actions/github-script@v6
+        id: get-branch-realm-name
+        env:
+          BRANCH: ${{ github.head_ref || github.ref }}
+        with:
+          script: return `${process.env.BRANCH.replaceAll('/', '-').replaceAll('refs-heads-', '').substr(0, 28)}`
+          result-encoding: string
+      - name: upload to s3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.RENDERER_AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.RENDERER_AWS_SECRET_KEY }}
+        run: >
+          npx @dcl/cdn-uploader@next \
+              --bucket ${{ secrets.RENDERER_AWS_BUCKET }} \
+              --local-folder "$(pwd)/bin" \
+              --bucket-folder 'sdk7-adaption-layer/${{steps.get-branch-realm-name.outputs.result}}' \
+              --variant uncompressed
