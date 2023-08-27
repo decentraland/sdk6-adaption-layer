@@ -1,3 +1,4 @@
+import { loadWrappedModule } from '../modules/modulesWrapper'
 import {
   proxyAddEntity,
   proxyAttachEntityComponent,
@@ -14,8 +15,10 @@ import { ECS6State } from './../types'
 
 import { engine } from '@dcl/ecs'
 
-//import * as SignedFetchModule from '~system/SignedFetch'
-//import * as EnvironmentApi from '~system/EnvironmentApi'
+type AdaptionLayerType = {
+  decentralandInterface: DecentralandInterface
+  forceUpdate: (dt: number) => void
+}
 
 export namespace AdaptionLayer {
   const state: ECS6State = {
@@ -32,7 +35,9 @@ export namespace AdaptionLayer {
       entities: {},
       componentsWithId: {},
       events: []
-    }
+    },
+
+    loadedModules: {}
   }
 
   // ECS6 core
@@ -108,32 +113,23 @@ export namespace AdaptionLayer {
   // RPC
   async function loadModule(moduleName: string) {
     console.log('loadModule', moduleName)
-    /*switch (moduleName)
-    {
-      case '@decentraland/SignedFetchModule':
-        return {
-          methods: Object.keys(SignedFetchModule).map((e): MethodDescriptor => ({ name: e })),
-          rpcHandle: 'signedFetchModule'
-        }
-      case '@decentraland/EnvironmentAPI':
-        return {
-          methods: Object.keys(EnvironmentApi).map((e): MethodDescriptor => ({ name: e })),
-          rpcHandle: 'environmentApi'
-        }
-    }*/
-    const emptyDescriptor: ModuleDescriptor = {
-      methods: [],
-      rpcHandle: 'empty'
-    }
 
-    return emptyDescriptor
+    const wrappedModule = await loadWrappedModule(moduleName)
+    state.loadedModules[wrappedModule.rpcHandle] = wrappedModule
+    
+    return wrappedModule
   }
   async function callRpc(rpcHandle: string, methodName: string, args: any[]) {
     console.log('callRpc', rpcHandle, methodName, args)
-    return dcl.callRpc(rpcHandle, methodName, args)
+    const module = state.loadedModules[rpcHandle]
+    if (module) {
+      const implementation = module.implementation
+      const res = await implementation[methodName](...args)
+      return res
+    }
+    throw new Error(`Module not loaded rpcHandle=${rpcHandle} methodName=${methodName}`)
   }
 
-  //let t = 0
   function onLegacyUpdate(dt: number) {
     for (const cb of state.onUpdateFunctions) {
       try {
@@ -144,21 +140,12 @@ export namespace AdaptionLayer {
     }
     
     proxyHandleTick(state)
-    /*t += dt
-
-    if (t > 1) {
-      t = 0
-      console.log({ state })
-      for (const [entity, c] of engine.getEntitiesWith(MeshRenderer)) {
-        console.log({ entity, c })
-      }
-    }*/
   }
 
-  export async function createDecentralandInterface(): Promise<DecentralandInterface> {
+  export function createAdaptionLayer(): AdaptionLayerType {
     engine.addSystem(onLegacyUpdate)
 
-    return {
+    const decentralandInterface: DecentralandInterface = {
       DEBUG: true,
       updateEntityComponent,
       attachEntityComponent,
@@ -181,6 +168,11 @@ export namespace AdaptionLayer {
       callRpc,
       onStart,
       error
+    }
+
+    return {
+      decentralandInterface,
+      forceUpdate: onLegacyUpdate
     }
   }
 }
