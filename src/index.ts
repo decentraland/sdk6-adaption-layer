@@ -19,6 +19,7 @@ async function getSceneCode(): Promise<string> {
   if (developerMode) {
     console.log('SDK7 Adaption Layer - Developer Mode')
     const devSceneJson = await getSceneJsonData('sdk6-tests/scene.json')
+    fileName = `sdk6-tests/${devSceneJson.main}`
   } else {
     fileName = sceneJson.main
   }
@@ -30,6 +31,8 @@ async function getSceneCode(): Promise<string> {
 export async function main() {
   const code = await getSceneCode()
 
-  const newDcl = await AdaptionLayer.createDecentralandInterface()
-  await customEval(code, { dcl: newDcl })
+  const adaptionLayer = AdaptionLayer.createAdaptionLayer()
+  await customEval(code, { dcl: adaptionLayer.decentralandInterface })
+
+  adaptionLayer.forceUpdate(0.0)
 }

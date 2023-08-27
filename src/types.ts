@@ -113,8 +113,10 @@ export type ECS6State = {
       }
     >
 
-    events: EventItem[]
+    events: EventItem[],
   }
+
+  loadedModules: Record<string, any>,
 }
 
 export type UpdateFunction = (state: ECS6State, ecs6EntityId: EntityID, payload: any) => void
