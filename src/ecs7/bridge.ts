@@ -21,7 +21,6 @@ const componentUpdates: Map<ECS6_CLASS_ID, ComponentAdaptation> = new Map([
 ])
 
 export function ecs7DeleteComponent(state: ECS6State, ecs6EntityId: EntityID, ecs6ClassId: number): void {
-  console.log('Delete Component', ecs6ClassId)
   const deleteFn = componentUpdates.get(ecs6ClassId as ECS6_CLASS_ID)?.remove
   if (deleteFn) {
     deleteFn(state, ecs6EntityId)
@@ -29,7 +28,6 @@ export function ecs7DeleteComponent(state: ECS6State, ecs6EntityId: EntityID, ec
 }
 
 export function ecs7UpdateComponent(state: ECS6State, ecs6EntityId: EntityID, ecs6ClassId: number, payload: any): void {
-  console.log('Update Component', ecs6ClassId)
   const updateFn = componentUpdates.get(ecs6ClassId as ECS6_CLASS_ID)?.update
   if (updateFn) {
     updateFn(state, ecs6EntityId, payload)

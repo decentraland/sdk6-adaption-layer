@@ -15,7 +15,5 @@ export function EventDataToRuntimeEvent(e: EventData): RuntimeEvent {
       return { type: 'rotationChanged', data: e.rotationChanged }
   }
 
-  console.log(`Event: ${e.type}`)
-
   return { type: '', data: '{}' }
 }
