@@ -16,12 +16,17 @@ jobs:
       - name: install dependencies
         run: npm install
       - name: npm run build
-        run: npm run build
+        run: |
+          npm run build
+          mv bin/index.js bin/index-debug.js
+      - name: npm run build:prod
+        run: npm run build:prod
       - uses: actions/upload-artifact@v3
         with:
           name: SDK7 Adaption Layer
           path: |
             bin/index.js
+            bin/index-debug.js
           if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
           retention-days: 90
       - uses: actions/github-script@v6
