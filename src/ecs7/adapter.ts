@@ -1,6 +1,6 @@
 import { ECS6State, EventItem } from '../types'
 import { ecs7DeleteComponent, ecs7UpdateComponent } from './bridge'
-import { ecs7EnsureEntity, ecs7EnsureMutable } from './ECS7'
+import { sdk7EnsureEntity, sdk7EnsureMutable } from './ECS7'
 
 import { engine, Transform } from '@dcl/ecs'
 
@@ -33,13 +33,13 @@ function ecs7AddEntity(state: ECS6State, entityId: EntityID): void {
   if (state.ecs7.entities[entityId]) {
     engine.removeEntity(state.ecs7.entities[entityId])
   }
-  ecs7EnsureEntity(state, entityId)
+  sdk7EnsureEntity(state, entityId)
 }
 
 function ecs7SetParent(state: ECS6State, entityId: string, parentId: string): void {
   if (parentId === '0') return
-  const parentEntity = ecs7EnsureEntity(state, parentId)
-  const transform = ecs7EnsureMutable(state, Transform, entityId)
+  const parentEntity = sdk7EnsureEntity(state, parentId)
+  const transform = sdk7EnsureMutable(state, Transform, entityId)
   transform.parent = parentEntity
 }
 

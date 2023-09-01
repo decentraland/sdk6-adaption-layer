@@ -1,10 +1,10 @@
-import { ecs7EnsureEntity, ecs7EnsureMutable } from '../ecs7/ECS7'
+import { sdk7EnsureEntity, sdk7EnsureMutable } from '../ecs7/ECS7'
 import { ECS6State } from '../types'
 
 import { Transform } from '@dcl/ecs'
 
 export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
-  const transform = ecs7EnsureMutable(state, Transform, ecs6EntityId)
+  const transform = sdk7EnsureMutable(state, Transform, ecs6EntityId)
   transform.position!.x = payload.position.x
   transform.position!.y = payload.position.y
   transform.position!.z = payload.position.z
@@ -18,5 +18,5 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
 }
 
 export function remove(state: ECS6State, ecs6EntityId: EntityID) {
-  Transform.deleteFrom(ecs7EnsureEntity(state, ecs6EntityId))
+  Transform.deleteFrom(sdk7EnsureEntity(state, ecs6EntityId))
 }

@@ -1,11 +1,11 @@
-import { ecs7EnsureEntity } from '../ecs7/ECS7'
+import { sdk7EnsureEntity } from '../ecs7/ECS7'
 import { ECS6State } from '../types'
 
-import { MeshRenderer, MeshCollider, ColliderLayer } from '@dcl/ecs'
+import { MeshRenderer, MeshCollider } from '@dcl/ecs'
 import { getColliderLayer } from './commons/utils'
 
 export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
-  const ecs7Entity = ecs7EnsureEntity(state, ecs6EntityId)
+  const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
 
   if (payload.visible) {
     const uvs: number[] = payload.uvs || []
@@ -24,7 +24,7 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
 }
 
 export function remove(state: ECS6State, ecs6EntityId: EntityID) {
-  const ecs7Entity = ecs7EnsureEntity(state, ecs6EntityId)
+  const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
   if (MeshRenderer.getOrNull(ecs7Entity)) {
     MeshRenderer.deleteFrom(ecs7Entity)
   }
