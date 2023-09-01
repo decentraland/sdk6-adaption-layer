@@ -12,4 +12,7 @@ Copy your SDK6 Scene Assets to the root directory and the built script to `sdk6-
 
 # Download script
 
-The script is available on the following [link](https://renderer-artifacts.decentraland.org/sdk7-adaption-layer/main/index.js)
+The script is available on the following links
+
+- https://renderer-artifacts.decentraland.org/sdk7-adaption-layer/main/index.js
+- https://renderer-artifacts.decentraland.org/sdk7-adaption-layer/main/index.min.js
