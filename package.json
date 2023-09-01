@@ -25,6 +25,7 @@
     "trailingComma": "none"
   },
   "dependencies": {
+    "@dcl-sdk/utils": "^1.1.2",
     "@dcl/posix": "^1.0.4",
     "@types/buffers": "^0.1.31",
     "@types/text-encoding": "^0.0.36",

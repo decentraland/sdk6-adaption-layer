@@ -1,8 +1,5 @@
 /// --- Set up a system ---
-
-import { getCurrentRealm } from "@decentraland/EnvironmentAPI"
-import { getParcel } from "@decentraland/ParcelIdentity"
-import { getProvider } from "@decentraland/web3-provider"
+import * as utils from '@dcl/ecs-scene-utils'
 
 class RotatorSystem {
   // this group will contain every entity that has a Transform component
@@ -35,33 +32,57 @@ function spawnCube(x: number, y: number, z: number) {
   // add a shape to the entity
   cube.addComponent(new BoxShape())
 
+  const material = new Material()
+  material.albedoColor = Color3.Red()
+  cube.addComponent(material)
+
   // add the entity to the engine
   engine.addEntity(cube)
 
+  cube.addComponent(
+    new utils.TriggerComponent(
+      new utils.TriggerBoxShape(new Vector3(5,5,5)), //shape
+      {
+        onCameraEnter: () => {
+          log('triggered! enter')
+          cube.getComponent(Material).albedoColor = Color3.Blue()
+        },
+        onCameraExit: () => {
+          log('triggered exit!')
+          cube.getComponent(Material).albedoColor = Color3.Red()
+        }
+      }
+    )
+  )
   return cube
 }
 
 /// --- Spawn a cube ---
 
 const cube = spawnCube(8, 1, 8)
-
+log('Hello world')
 cube.addComponent(
   new OnPointerDown(() => {
-    cube.getComponent(Transform).scale.z *= 1.1
+    log('OnPointerDown')
+    /*cube.getComponent(Transform).scale.z *= 1.1
     cube.getComponent(Transform).scale.x *= 0.9
 
-    spawnCube(Math.random() * 8 + 1, Math.random() * 8, Math.random() * 8 + 1)
+    spawnCube(Math.random() * 8 + 1, Math.random() * 8, Math.random() * 8 + 1)*/
   })
 )
 
-getParcel().then((e) => {
-  log('getParcel:', JSON.stringify(e))
-})
-
-getProvider().then((e) => {
-  log('getProvider:', JSON.stringify(e))
-})
-
-getCurrentRealm().then((e) => {
-  log('getCurrentRealm:', JSON.stringify(e))
-})
+cube.addComponent(
+  new OnPointerUp(() => {
+    log('OnPointerUp')
+  })
+)
+cube.addComponent(
+  new OnPointerHoverEnter(() => {
+    log('OnPointerHoverEnter')
+  })
+)
+cube.addComponent(
+  new OnPointerHoverExit(() => {
+    log('OnPointerHoverExit')
+  })
+)

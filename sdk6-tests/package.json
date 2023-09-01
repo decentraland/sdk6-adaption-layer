@@ -20,5 +20,11 @@
     "node": ">=14.0.0",
     "npm": ">=6.0.0",
     "yarn": "please use npm"
-  }
+  },
+  "dependencies": {
+    "@dcl/ecs-scene-utils": "^1.7.5"
+  },
+  "bundleDependencies": [
+    "@dcl/ecs-scene-utils"
+  ]
 }

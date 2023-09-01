@@ -1,3 +1,4 @@
+import { updateEventSystem } from '../events/events'
 import { loadWrappedModule } from '../modules/modulesWrapper'
 import {
   proxyAddEntity,
@@ -140,6 +141,11 @@ export namespace AdaptionLayer {
     }
     
     proxyHandleTick(state)
+    updateEventSystem(state)
+  }
+
+  function setupRaycast() {
+    
   }
 
   export function createAdaptionLayer(): AdaptionLayerType {
