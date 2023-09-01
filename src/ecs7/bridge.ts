@@ -30,7 +30,6 @@ export function ecs7DeleteComponent(state: ECS6State, ecs6EntityId: EntityID, ec
 }
 
 export function ecs7UpdateComponent(state: ECS6State, ecs6EntityId: EntityID, ecs6ClassId: number, payload: any): void {
-  if (ecs6ClassId !== ECS6_CLASS_ID.TRANSFORM)
   const updateFn = componentUpdates.get(ecs6ClassId as ECS6_CLASS_ID)?.update
   if (updateFn) {
     updateFn(state, ecs6EntityId, payload)
