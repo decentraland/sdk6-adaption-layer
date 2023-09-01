@@ -42,7 +42,7 @@ export function updateEventSystem(state: ECS6State) {
   for (const [entity, component] of engine.getEntitiesWith(PointerEventStateComponent)) {
     for (const action of component.registeredActions) {
       const event = inputSystem.getInputCommand(action.inputAction, action.eventType)
-      if (event && event?.hit?.entityId) {
+      if (event && event?.hit?.entityId == entity) {
         sendEventToSDK6(state.onEventFunctions, {
           type: 'uuidEvent',
           data: {
