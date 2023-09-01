@@ -44,15 +44,19 @@ function spawnCube(x: number, y: number, z: number) {
       new utils.TriggerBoxShape(new Vector3(5,5,5)), //shape
       {
         onCameraEnter: () => {
-          log('triggered! enter')
           cube.getComponent(Material).albedoColor = Color3.Blue()
         },
         onCameraExit: () => {
-          log('triggered exit!')
           cube.getComponent(Material).albedoColor = Color3.Red()
         }
       }
     )
+  )
+
+  cube.addComponent(
+    new OnPointerUp(() => {
+      log('OnPointerUp', cube)
+    })
   )
   return cube
 }
@@ -64,18 +68,14 @@ log('Hello world')
 cube.addComponent(
   new OnPointerDown(() => {
     log('OnPointerDown')
-    /*cube.getComponent(Transform).scale.z *= 1.1
+    cube.getComponent(Transform).scale.z *= 1.1
     cube.getComponent(Transform).scale.x *= 0.9
 
-    spawnCube(Math.random() * 8 + 1, Math.random() * 8, Math.random() * 8 + 1)*/
+    spawnCube(Math.random() * 8 + 1, Math.random() * 8, Math.random() * 8 + 1)
   })
 )
 
-cube.addComponent(
-  new OnPointerUp(() => {
-    log('OnPointerUp')
-  })
-)
+
 cube.addComponent(
   new OnPointerHoverEnter(() => {
     log('OnPointerHoverEnter')
