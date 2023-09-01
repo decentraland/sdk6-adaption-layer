@@ -1,16 +1,17 @@
 import { getSdk6Entity, sdk7EnsureEntity } from '../ecs7/ECS7'
 import { ECS6State } from '../types'
-import { pointerEventsSystem } from '@dcl/ecs'
 import { convertInputAction } from './commons/utils'
-import { sendEventToSDK6 } from '../events/events'
-import { Entity, EntityState, InputAction, PBPointerEventsResult, PointerEventType, PointerEvents, Schemas, engine, inputSystem } from '@dcl/sdk/ecs'
+import { Entity, PBPointerEventsResult, PointerEventType, PointerEvents, Schemas, engine } from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
-import { CustomPointerEvent, CustomPointerEventSchemas } from '../schemas/CustomPointerEventSchemas'
 
 export const PointerEventStateComponent = engine.defineComponent(
   "pointerEventStateComponent",
   {
-    registeredActions: Schemas.Array(CustomPointerEventSchemas),
+    registeredActions: Schemas.Array(Schemas.Map({
+      inputAction: Schemas.Number,
+      eventType: Schemas.Number,
+      uuid: Schemas.String
+    })),
   })
 
 function convertPointerEventTypeToSDK6(type: PointerEventType) {

@@ -18,16 +18,11 @@ export function sdk7EnsureEntity(state: ECS6State, ecs6EntityId: EntityID): Enti
 
 // TODO: A cache can be created to make function faster
 export function getSdk6Entity(state: ECS6State, ecs7EntityId: Entity | undefined): EntityID | undefined {
-  if (ecs7EntityId) {
-    for (const key in state.ecs7.entities) {
-      const value = state.ecs7.entities[key]
-      if (value === ecs7EntityId) {
-        return key
-      }
-    }
-  }
-  return undefined
+  if (!ecs7EntityId) return undefined
+  const entries = Object.entries(state.ecs7.entities).find(value => value[1] == ecs7EntityId)
+  return entries ? entries![0] : undefined
 }
+
 
 export function sdk7EnsureMutable<T>(
   state: ECS6State,
