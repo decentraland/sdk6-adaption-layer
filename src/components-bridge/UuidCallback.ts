@@ -3,7 +3,7 @@ import { ECS6State } from '../types'
 import { pointerEventsSystem } from '@dcl/ecs'
 import { convertInputAction } from './commons/utils'
 import { sendEventToSDK6 } from '../events/events'
-import { Entity, InputAction, PBPointerEventsResult, PointerEventType, PointerEvents, Schemas, engine, inputSystem } from '@dcl/sdk/ecs'
+import { Entity, EntityState, InputAction, PBPointerEventsResult, PointerEventType, PointerEvents, Schemas, engine, inputSystem } from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
 import { CustomPointerEvent, CustomPointerEventSchemas } from '../schemas/CustomPointerEventSchemas'
 
@@ -43,7 +43,7 @@ function getPointerEventType(type: string): PointerEventType {
   return PointerEventType.PET_DOWN
 }
 
-function convertPointerEventToSDK6(state: ECS6State, event: PBPointerEventsResult): GlobalInputEventResult {
+export function convertPointerEventToSDK6(state: ECS6State, event: PBPointerEventsResult): GlobalInputEventResult {
   return {
     buttonId: event.button,
     direction: event.hit?.direction || Vector3.create(0.0, 0.0, 0.0),
@@ -72,23 +72,6 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
         inputAction: convertInputAction(payload.button)!,
         uuid: payload.uuid
       }]
-    })
-
-    // create system
-    engine.addSystem(() => {
-      const eventStateComponent = PointerEventStateComponent.get(ecs7Entity)
-      for (const action of eventStateComponent.registeredActions) {
-        const event = inputSystem.getInputCommand(action.inputAction, action.eventType)
-        if (event) {
-          sendEventToSDK6(state.onEventFunctions, {
-            type: 'uuidEvent',
-            data: {
-              uuid: action.uuid,
-              payload: convertPointerEventToSDK6(state, event)
-            } as IEvents['uuidEvent']
-          })
-        }
-      }
     })
   } else {
     component.registeredActions.push({
