@@ -10,8 +10,7 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
   if (payload.visible) {
     GltfContainer.createOrReplace(ecs7Entity, {
       src: payload.src,
-      invisibleMeshesCollisionMask: getColliderLayer(payload),
-      visibleMeshesCollisionMask: getColliderLayer(payload)
+      invisibleMeshesCollisionMask: getColliderLayer(payload)
     })
   } else {
     GltfContainer.deleteFrom(ecs7Entity)
