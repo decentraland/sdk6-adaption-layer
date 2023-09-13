@@ -144,10 +144,6 @@ export namespace AdaptionLayer {
     updateEventSystem(state)
   }
 
-  function setupRaycast() {
-    
-  }
-
   export function createAdaptionLayer(): AdaptionLayerType {
     engine.addSystem(onLegacyUpdate)
 

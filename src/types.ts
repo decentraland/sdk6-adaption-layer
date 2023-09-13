@@ -103,6 +103,7 @@ export type ECS6State = {
           string,
           {
             classId: number
+            id: string
           }
         >
       }

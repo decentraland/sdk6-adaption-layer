@@ -1,4 +1,4 @@
-import { sdk7EnsureEntity, sdk7EnsureMutable } from '../ecs7/ECS7'
+import { sdk7EnsureEntity, sdk7EnsureMutable } from '../ecs7/ecs7'
 import { ECS6State } from '../types'
 
 import { Transform } from '@dcl/ecs'

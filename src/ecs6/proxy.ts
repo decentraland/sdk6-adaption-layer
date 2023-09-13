@@ -45,7 +45,7 @@ export function proxyAttachEntityComponent(
     }
   }
 
-  state.ecs6.entities[entityId].componentsName[componentName] = { classId: state.ecs6.componentsWithId[id].classId }
+  state.ecs6.entities[entityId].componentsName[componentName] = { classId: state.ecs6.componentsWithId[id].classId, id }
 
   state.ecs6.events.push({
     method: 'attachEntityComponent',
@@ -198,8 +198,6 @@ export function proxyUpdateEntityComponent(
   if (!entityExists(state, entityId)) {
     state.ecs6.entities[entityId] = { componentsName: {} }
   }
-
-  state.ecs6.entities[entityId].componentsName[componentName] = { classId }
 
   state.ecs6.events.push({
     method: 'updateEntityComponent',

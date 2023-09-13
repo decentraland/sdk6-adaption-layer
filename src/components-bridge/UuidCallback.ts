@@ -1,4 +1,4 @@
-import { getSdk6Entity, sdk7EnsureEntity } from '../ecs7/ECS7'
+import { getSdk6Entity, sdk7EnsureEntity } from '../ecs7/ecs7'
 import { ECS6State } from '../types'
 import { convertInputAction } from './commons/utils'
 import { Entity, PBPointerEventsResult, PointerEventType, PointerEvents, Schemas, engine } from '@dcl/sdk/ecs'

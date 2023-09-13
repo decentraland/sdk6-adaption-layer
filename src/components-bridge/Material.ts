@@ -1,4 +1,4 @@
-import { sdk7EnsureEntity } from '../ecs7/ECS7'
+import { sdk7EnsureEntity } from '../ecs7/ecs7'
 import { ECS6State, ECS6_CLASS_ID } from '../types'
 
 import { Material, TextureUnion, TextureWrapMode } from '@dcl/ecs'

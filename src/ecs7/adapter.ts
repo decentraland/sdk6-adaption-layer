@@ -1,6 +1,6 @@
 import { ECS6State, EventItem } from '../types'
 import { ecs7DeleteComponent, ecs7UpdateComponent } from './bridge'
-import { sdk7EnsureEntity, sdk7EnsureMutable } from './ECS7'
+import { sdk7EnsureEntity, sdk7EnsureMutable } from './ecs7'
 
 import { engine, Transform } from '@dcl/ecs'
 
@@ -24,6 +24,12 @@ function ecs7RemoveEntityComponent(state: ECS6State, entityId: string, component
   for (const [_id, component] of Object.entries(state.ecs7.components)) {
     if (component.entityId === entityId && component.componentName === componentName && component.classId) {
       ecs7DeleteComponent(state, entityId, component.classId)
+
+      // clean
+      delete state.ecs7.components[_id]
+      const sdk6ComponentId = state.ecs6.entities[entityId].componentsName[component.componentName].id
+      delete state.ecs6.componentsWithId[sdk6ComponentId]
+      delete state.ecs6.entities[entityId].componentsName[component.componentName]
       return
     }
   }

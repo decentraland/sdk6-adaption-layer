@@ -1,4 +1,4 @@
-import { sdk7EnsureEntity } from '../ecs7/ECS7'
+import { sdk7EnsureEntity } from '../ecs7/ecs7'
 import { ECS6State } from '../types'
 
 import { Animator, PBAnimationState } from '@dcl/sdk/ecs'
