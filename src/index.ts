@@ -9,7 +9,7 @@ async function getSceneJsonData(fileName: string): Promise<any> {
   return JSON.parse(content) as any
 }
 
-async function getSceneCode(): Promise<string> {
+async function getSceneCode(): Promise<{ code: string, developerMode: boolean }> {
   const sceneJson = await getSceneJsonData('scene.json')
 
   // If the runtimeVersion is SDK7, it means that we're developing
@@ -25,13 +25,16 @@ async function getSceneCode(): Promise<string> {
   }
 
   const res = await readFile({ fileName })
-  return new TextDecoder().decode(res.content)
+  return {
+    code: new TextDecoder().decode(res.content),
+    developerMode
+  }
 }
 
 export async function main() {
-  const code = await getSceneCode()
+  const { code, developerMode } = await getSceneCode()
 
-  const adaptionLayer = AdaptionLayer.createAdaptionLayer()
+  const adaptionLayer = AdaptionLayer.createAdaptionLayer(developerMode)
   await customEval(code, { dcl: adaptionLayer.decentralandInterface })
 
   adaptionLayer.forceUpdate(0.0)

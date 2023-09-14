@@ -1,5 +1,5 @@
 import { sdk7EnsureEntity } from '../ecs7/ecs7'
-import { ECS6State, ECS6_CLASS_ID } from '../types'
+import { AdaptationLayerState, ECS6_CLASS_ID } from '../types'
 
 import { Material, TextureUnion, TextureWrapMode } from '@dcl/ecs'
 
@@ -19,7 +19,7 @@ function convertWrapMode(ecs6WrapMode: number | undefined): TextureWrapMode | un
   return undefined
 }
 
-function convertTexture(state: ECS6State, textureEntityId: any): TextureUnion | undefined {
+function convertTexture(state: AdaptationLayerState, textureEntityId: any): TextureUnion | undefined {
   if (textureEntityId) {
     const textureData = state.ecs7.components[textureEntityId]
     const texturePayload = textureData.data
@@ -42,7 +42,7 @@ function convertTexture(state: ECS6State, textureEntityId: any): TextureUnion | 
   return undefined
 }
 
-export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
+export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
   Material.setPbrMaterial(ecs7Entity, {
     texture: convertTexture(state, payload.albedoTexture),
@@ -64,7 +64,7 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
   })
 }
 
-export function remove(state: ECS6State, ecs6EntityId: EntityID) {
+export function remove(state: AdaptationLayerState, ecs6EntityId: EntityID) {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
   if (Material.getOrNull(ecs7Entity)) {
     Material.deleteFrom(ecs7Entity)

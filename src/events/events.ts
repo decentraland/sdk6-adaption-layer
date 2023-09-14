@@ -1,4 +1,4 @@
-import { ECS6State } from '../types';
+import { AdaptationLayerState } from '../types';
 
 import { engine, inputSystem } from '@dcl/sdk/ecs'
 import { Quaternion } from '@dcl/sdk/math'
@@ -15,7 +15,7 @@ export function sendEventToSDK6(onEventFunctions: ((event: any) => void)[], even
   }
 }
 
-export function updateEventSystem(state: ECS6State) {
+export function updateEventSystem(state: AdaptationLayerState) {
   // TODO: We can cache it, and send only when changes
 
   if (state.subscribedEvents.has('positionChanged')) {

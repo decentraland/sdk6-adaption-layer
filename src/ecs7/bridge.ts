@@ -1,4 +1,4 @@
-import { ComponentAdaptation, ECS6State, ECS6_CLASS_ID } from '../types'
+import { ComponentAdaptation, AdaptationLayerState, ECS6_CLASS_ID } from '../types'
 
 import * as Ecs6Transform from '../components-bridge/Transform'
 import * as Ecs6BoxShape from '../components-bridge/BoxShape'
@@ -24,14 +24,14 @@ const componentUpdates: Map<ECS6_CLASS_ID, ComponentAdaptation> = new Map([
   [ECS6_CLASS_ID.ANIMATION, Ecs6Animation],
 ])
 
-export function ecs7DeleteComponent(state: ECS6State, ecs6EntityId: EntityID, ecs6ClassId: number): void {
+export function ecs7DeleteComponent(state: AdaptationLayerState, ecs6EntityId: EntityID, ecs6ClassId: number): void {
   const deleteFn = componentUpdates.get(ecs6ClassId as ECS6_CLASS_ID)?.remove
   if (deleteFn) {
     deleteFn(state, ecs6EntityId)
   }
 }
 
-export function ecs7UpdateComponent(state: ECS6State, ecs6EntityId: EntityID, ecs6ClassId: number, payload: any): void {
+export function ecs7UpdateComponent(state: AdaptationLayerState, ecs6EntityId: EntityID, ecs6ClassId: number, payload: any): void {
   const updateFn = componentUpdates.get(ecs6ClassId as ECS6_CLASS_ID)?.update
   if (updateFn) {
     updateFn(state, ecs6EntityId, payload)

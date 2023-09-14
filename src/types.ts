@@ -84,7 +84,7 @@ export type Ecs6ComponentData = {
 }
 import { Entity } from '@dcl/ecs'
 
-export type ECS6State = {
+export type AdaptationLayerState = {
   onUpdateFunctions: ((dt: number) => void)[]
   onStartFunctions: (() => void)[]
   onEventFunctions: ((event: any) => void)[]
@@ -124,10 +124,12 @@ export type ECS6State = {
   }
 
   loadedModules: Record<string, any>,
+
+  developerMode: boolean,
 }
 
-export type UpdateFunction = (state: ECS6State, ecs6EntityId: EntityID, payload: any) => void
-export type DeleteFunction = (state: ECS6State, ecs6EntityId: EntityID) => void
+export type UpdateFunction = (state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) => void
+export type DeleteFunction = (state: AdaptationLayerState, ecs6EntityId: EntityID) => void
 
 export type ComponentAdaptation = {
   update: UpdateFunction

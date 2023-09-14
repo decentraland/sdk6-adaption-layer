@@ -1,9 +1,9 @@
 import { sdk7EnsureEntity, sdk7EnsureMutable } from '../ecs7/ecs7'
-import { ECS6State } from '../types'
+import { AdaptationLayerState } from '../types'
 
 import { Transform } from '@dcl/ecs'
 
-export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
+export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) {
   const transform = sdk7EnsureMutable(state, Transform, ecs6EntityId)
   transform.position!.x = payload.position.x
   transform.position!.y = payload.position.y
@@ -17,6 +17,6 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
   transform.rotation!.w = payload.rotation.w
 }
 
-export function remove(state: ECS6State, ecs6EntityId: EntityID) {
+export function remove(state: AdaptationLayerState, ecs6EntityId: EntityID) {
   Transform.deleteFrom(sdk7EnsureEntity(state, ecs6EntityId))
 }

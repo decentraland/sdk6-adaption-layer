@@ -1,10 +1,10 @@
 import { sdk7EnsureEntity } from '../ecs7/ecs7'
-import { ECS6State } from '../types'
+import { AdaptationLayerState } from '../types'
 
 import { GltfContainer } from '@dcl/ecs'
 import { getColliderLayer } from './commons/utils'
 
-export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
+export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
 
   if (payload.visible) {
@@ -17,7 +17,7 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
   }
 }
 
-export function remove(state: ECS6State, ecs6EntityId: EntityID) {
+export function remove(state: AdaptationLayerState, ecs6EntityId: EntityID) {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
   GltfContainer.deleteFrom(ecs7Entity)
 }

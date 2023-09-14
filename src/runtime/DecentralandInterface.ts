@@ -1,3 +1,4 @@
+import { printState } from '../debug'
 import { updateEventSystem } from '../events/events'
 import { loadWrappedModule } from '../modules/modulesWrapper'
 import {
@@ -12,7 +13,7 @@ import {
   proxySetParent,
   proxyUpdateEntityComponent
 } from './../ecs6/proxy'
-import { ECS6State } from './../types'
+import { AdaptationLayerState } from './../types'
 
 import { engine } from '@dcl/ecs'
 
@@ -22,7 +23,7 @@ type AdaptionLayerType = {
 }
 
 export namespace AdaptionLayer {
-  const state: ECS6State = {
+  const state: AdaptationLayerState = {
     onUpdateFunctions: [],
     onStartFunctions: [],
     onEventFunctions: [],
@@ -38,7 +39,9 @@ export namespace AdaptionLayer {
       events: []
     },
 
-    loadedModules: {}
+    loadedModules: {},
+
+    developerMode: false
   }
 
   // ECS6 core
@@ -85,7 +88,6 @@ export namespace AdaptionLayer {
   // Events
   function query(queryType: any, payload: any) {}
   function subscribe(eventName: string): void {
-    console.log('subscribe', eventName)
     state.subscribedEvents.add(eventName)
   }
   function unsubscribe(eventName: string): void {
@@ -113,15 +115,12 @@ export namespace AdaptionLayer {
 
   // RPC
   async function loadModule(moduleName: string) {
-    console.log('loadModule', moduleName)
-
     const wrappedModule = await loadWrappedModule(moduleName)
     state.loadedModules[wrappedModule.rpcHandle] = wrappedModule
     
     return wrappedModule
   }
   async function callRpc(rpcHandle: string, methodName: string, args: any[]) {
-    console.log('callRpc', rpcHandle, methodName, args)
     const module = state.loadedModules[rpcHandle]
     if (module) {
       const implementation = module.implementation
@@ -142,9 +141,15 @@ export namespace AdaptionLayer {
     
     proxyHandleTick(state)
     updateEventSystem(state)
+
+    if (state.developerMode) {
+      printState(state)
+    }
   }
 
-  export function createAdaptionLayer(): AdaptionLayerType {
+  export function createAdaptionLayer(developerMode: boolean): AdaptionLayerType {
+    state.developerMode = developerMode
+
     engine.addSystem(onLegacyUpdate)
 
     const decentralandInterface: DecentralandInterface = {

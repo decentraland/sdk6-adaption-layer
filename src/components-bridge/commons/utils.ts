@@ -1,6 +1,6 @@
 import { ColliderLayer, Material, TextureUnion, TextureWrapMode, InputAction } from '@dcl/ecs'
 
-import { ECS6State, ECS6_ActionButton, ECS6_CLASS_ID } from '../../types'
+import { AdaptationLayerState, ECS6_ActionButton, ECS6_CLASS_ID } from '../../types'
 
 export function getColliderLayer(payload: any) {
   if (payload.isPointerBlocker || payload.withCollisions) {
@@ -27,7 +27,7 @@ export function convertWrapMode(ecs6WrapMode: number | undefined): TextureWrapMo
   return undefined
 }
 
-export function convertTexture(state: ECS6State, textureEntityId: any): TextureUnion | undefined {
+export function convertTexture(state: AdaptationLayerState, textureEntityId: any): TextureUnion | undefined {
   if (textureEntityId) {
     const textureData = state.ecs7.components[textureEntityId]
     const texturePayload = textureData.data

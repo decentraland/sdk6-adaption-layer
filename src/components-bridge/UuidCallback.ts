@@ -1,5 +1,5 @@
 import { getSdk6Entity, sdk7EnsureEntity } from '../ecs7/ecs7'
-import { ECS6State } from '../types'
+import { AdaptationLayerState } from '../types'
 import { convertInputAction } from './commons/utils'
 import { Entity, PBPointerEventsResult, PointerEventType, PointerEvents, Schemas, engine } from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
@@ -44,7 +44,7 @@ function getPointerEventType(type: string): PointerEventType {
   return PointerEventType.PET_DOWN
 }
 
-export function convertPointerEventToSDK6(state: ECS6State, event: PBPointerEventsResult): GlobalInputEventResult {
+export function convertPointerEventToSDK6(state: AdaptationLayerState, event: PBPointerEventsResult): GlobalInputEventResult {
   return {
     buttonId: event.button,
     direction: event.hit?.direction || Vector3.create(0.0, 0.0, 0.0),
@@ -61,7 +61,7 @@ export function convertPointerEventToSDK6(state: ECS6State, event: PBPointerEven
   }
 }
 
-export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
+export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
 
   const component = PointerEventStateComponent.getMutableOrNull(ecs7Entity)
@@ -98,7 +98,7 @@ export function update(state: ECS6State, ecs6EntityId: EntityID, payload: any) {
   }
 }
 
-export function remove(state: ECS6State, ecs6EntityId: EntityID) {
+export function remove(state: AdaptationLayerState, ecs6EntityId: EntityID) {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
   PointerEvents.deleteFrom(ecs7Entity)
   PointerEventStateComponent.deleteFrom(ecs7Entity)
