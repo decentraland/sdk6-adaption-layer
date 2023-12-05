@@ -12,7 +12,7 @@ import {
   proxyRemoveEntityComponent,
   proxySetParent,
   proxyUpdateEntityComponent
-} from './../ecs6/proxy'
+} from '../ecs6/proxy'
 import { AdaptationLayerState } from './../types'
 
 import { engine } from '@dcl/ecs'
@@ -142,9 +142,9 @@ export namespace AdaptionLayer {
     proxyHandleTick(state)
     updateEventSystem(state)
 
-    if (state.developerMode) {
+    /*if (state.developerMode) {
       printState(state)
-    }
+    }*/
   }
 
   export function createAdaptionLayer(developerMode: boolean): AdaptionLayerType {

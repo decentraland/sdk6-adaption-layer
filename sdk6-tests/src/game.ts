@@ -1,5 +1,6 @@
 /// --- Set up a system ---
 import * as utils from '@dcl/ecs-scene-utils'
+import { setupUi } from './ui'
 
 class RotatorSystem {
   // this group will contain every entity that has a Transform component
@@ -86,3 +87,5 @@ cube.addComponent(
     log('OnPointerHoverExit')
   })
 )
+
+setupUi()

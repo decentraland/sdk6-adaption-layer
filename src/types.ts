@@ -136,6 +136,14 @@ export type ComponentAdaptation = {
   remove: DeleteFunction
 }
 
+export type UIUpdateFunction = (state: AdaptationLayerState, id: string, payload: any) => void
+export type UIDeleteFunction = (state: AdaptationLayerState, id: string) => void
+
+export type UIComponentAdaptation = {
+  update: UIUpdateFunction
+  remove: UIDeleteFunction
+}
+
 export type AttachEntityComponentEvent = {
   method: 'attachEntityComponent'
   data: {

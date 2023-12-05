@@ -1,8 +1,9 @@
-import { AdaptationLayerState, EventItem } from '../types'
+import { AdaptationLayerState, ECS6_CLASS_ID, EventItem } from '../types'
 import { ecs7DeleteComponent, ecs7UpdateComponent } from './bridge'
-import { sdk7EnsureEntity, sdk7EnsureMutable } from './ecs7'
+import { isSDK6UIClassID, sdk7EnsureEntity, sdk7EnsureMutable, sdk7RemoveEntityByIDForUI } from './ecs7'
 
 import { engine, Transform } from '@dcl/ecs'
+import { ecs7UIDeleteComponent, ecs7UIUpdateComponent } from './uibridge'
 
 function ensureEcs6ComponentState(state: AdaptationLayerState, id: string) {
   if (state.ecs7.components[id] === undefined) {
@@ -67,8 +68,16 @@ function ecs7ComponentCreated(state: AdaptationLayerState, id: string, component
 function ecs7ComponentDisposed(state: AdaptationLayerState, id: string) {
   if (state.ecs7.components[id]) {
     const component = state.ecs7.components[id]
-    if (component.entityId && component.classId) {
-      ecs7DeleteComponent(state, component.entityId, component.classId)
+
+    if (component.classId) {
+      if (isSDK6UIClassID(component.classId)) {
+        ecs7UIDeleteComponent(state, id, component.classId)
+        sdk7RemoveEntityByIDForUI(state, id)
+      } else {
+        if (component.entityId) {
+          ecs7DeleteComponent(state, component.entityId, component.classId)
+        }
+      }
     }
     delete state.ecs7.components[id]
   }
@@ -77,8 +86,15 @@ function ecs7ComponentDisposed(state: AdaptationLayerState, id: string) {
 function ecs7ComponentUpdated(state: AdaptationLayerState, id: string, json: string) {
   const component = ensureEcs6ComponentState(state, id)
   component.data = JSON.parse(json)
-  if (component.classId && component.entityId) {
-    ecs7UpdateComponent(state, component.entityId, component.classId, component.data)
+
+  if (!component.classId) return
+
+  if (isSDK6UIClassID(component.classId)) {
+    ecs7UIUpdateComponent(state, id, component.classId, component.data)
+  } else {
+    if (component.entityId) {
+      ecs7UpdateComponent(state, component.entityId, component.classId, component.data)
+    }
   }
 }
 
