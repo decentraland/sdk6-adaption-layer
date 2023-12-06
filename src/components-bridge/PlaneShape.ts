@@ -8,7 +8,11 @@ export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payl
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
 
   if (payload.visible) {
-    const uvs: number[] = payload.uvs || []
+    let uvs: number[] = payload.uvs || []
+    if (uvs.length === 0) {
+      uvs = [0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0]
+    }
+    uvs = [...uvs.slice(2), ...uvs.slice(0, 2)]
 
     MeshRenderer.setPlane(ecs7Entity, uvs)
   } else if (MeshRenderer.getOrNull(ecs7Entity)) {

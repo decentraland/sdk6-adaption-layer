@@ -8,7 +8,7 @@ export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payl
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
 
   if (payload.visible) {
-    MeshRenderer.setCylinder(ecs7Entity, payload.radiusTop || 0, payload.radiusBottom || 1)
+    MeshRenderer.setCylinder(ecs7Entity, payload.radiusBottom || 1, payload.radiusTop || 0)
   } else if (MeshRenderer.getOrNull(ecs7Entity)) {
     MeshRenderer.deleteFrom(ecs7Entity)
   }
