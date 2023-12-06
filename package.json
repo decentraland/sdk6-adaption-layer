@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@dcl/js-runtime": "7.3.10",
-    "@dcl/sdk": "^7.3.9-5904808069.commit-1564112"
+    "@dcl/sdk": "^7.3.30"
   },
   "engines": {
     "node": ">=16.0.0",

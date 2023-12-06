@@ -8,7 +8,6 @@ function convertAnimationState(states: any): PBAnimationState[] {
 
   for (const state of states) {
     animationStates.push({
-      name: state.clip, // TODO: Review if this is right
       clip: state.clip,
       loop: state.looping,
       weight: state.weight,

@@ -11,7 +11,7 @@ export function sdk7ExistsEntity(state: AdaptationLayerState, ecs6EntityId: Enti
 
 export function sdk7EnsureEntity(state: AdaptationLayerState, ecs6EntityId: EntityID): Entity {
   if (state.ecs7.entities[ecs6EntityId] === undefined) {
-    state.ecs7.entities[ecs6EntityId] = engine.addEntity(true)
+    state.ecs7.entities[ecs6EntityId] = engine.addEntity()
   }
   return state.ecs7.entities[ecs6EntityId]
 }
