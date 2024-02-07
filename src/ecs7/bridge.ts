@@ -10,6 +10,7 @@ import * as Ecs6GltfShape from '../components-bridge/GltfShape'
 import * as Ecs6NftShape from '../components-bridge/NftShape'
 import * as Ecs6UuidCallback from '../components-bridge/UuidCallback'
 import * as Ecs6Animation from '../components-bridge/Animation'
+import * as Ecs6AudioStream from '../components-bridge/AudioStream'
 
 const componentUpdates: Map<ECS6_CLASS_ID, ComponentAdaptation> = new Map([
   [ECS6_CLASS_ID.TRANSFORM, Ecs6Transform],
@@ -22,6 +23,7 @@ const componentUpdates: Map<ECS6_CLASS_ID, ComponentAdaptation> = new Map([
   [ECS6_CLASS_ID.NFT_SHAPE, Ecs6NftShape],
   [ECS6_CLASS_ID.UUID_CALLBACK, Ecs6UuidCallback],
   [ECS6_CLASS_ID.ANIMATION, Ecs6Animation],
+  [ECS6_CLASS_ID.AUDIO_STREAM, Ecs6AudioStream],
 ])
 
 export function ecs7DeleteComponent(state: AdaptationLayerState, ecs6EntityId: EntityID, ecs6ClassId: number): void {

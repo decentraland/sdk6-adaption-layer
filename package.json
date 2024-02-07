@@ -5,13 +5,13 @@
   "scripts": {
     "start": "sdk-commands start",
     "deploy": "sdk-commands deploy",
-    "build": "sdk-commands build --skip-install",
-    "build:prod": "sdk-commands build --skip-install --production",
+    "build": "sdk-commands build --skip-install --customEntryPoint",
+    "build:prod": "sdk-commands build --skip-install --production --customEntryPoint",
     "upgrade-sdk": "npm install --save-dev @dcl/sdk@latest",
     "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "7.3.10",
+    "@dcl/js-runtime": "7.4.0",
     "@dcl/sdk": "^7.3.30"
   },
   "engines": {

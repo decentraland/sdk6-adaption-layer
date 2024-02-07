@@ -20,6 +20,7 @@ import { engine } from '@dcl/ecs'
 type AdaptionLayerType = {
   decentralandInterface: DecentralandInterface
   forceUpdate: (dt: number) => void
+  flushEvents: () => void
 }
 
 export namespace AdaptionLayer {
@@ -130,6 +131,15 @@ export namespace AdaptionLayer {
     throw new Error(`Module not loaded rpcHandle=${rpcHandle} methodName=${methodName}`)
   }
 
+  function flushEvents() {
+    proxyHandleTick(state)
+    updateEventSystem(state)
+
+    if (state.developerMode) {
+      printState(state)
+    }
+  }
+
   function onLegacyUpdate(dt: number) {
     for (const cb of state.onUpdateFunctions) {
       try {
@@ -138,13 +148,7 @@ export namespace AdaptionLayer {
         error('Error onLegacyUpdate', err)
       }
     }
-    
-    proxyHandleTick(state)
-    updateEventSystem(state)
-
-    if (state.developerMode) {
-      printState(state)
-    }
+    flushEvents()
   }
 
   export function createAdaptionLayer(developerMode: boolean): AdaptionLayerType {
@@ -179,7 +183,8 @@ export namespace AdaptionLayer {
 
     return {
       decentralandInterface,
-      forceUpdate: onLegacyUpdate
+      forceUpdate: onLegacyUpdate,
+      flushEvents
     }
   }
 }

@@ -31,11 +31,29 @@ async function getSceneCode(): Promise<{ code: string, developerMode: boolean }>
   }
 }
 
-export async function main() {
+import * as sdk from "@dcl/sdk"
+
+var sdkRef = sdk as any
+
+const engineOnUpdate = sdkRef.onUpdate
+const engineOnStart = sdkRef.onStart
+
+export async function onUpdate(dt: number) {
+  await engineOnUpdate(dt)
+}
+
+export async function onStart() {
   const { code, developerMode } = await getSceneCode()
+  await engineOnStart()
 
   const adaptionLayer = AdaptionLayer.createAdaptionLayer(developerMode)
   await customEval(code, { dcl: adaptionLayer.decentralandInterface })
-
+  adaptionLayer.flushEvents()
+  
   adaptionLayer.forceUpdate(0.0)
+  adaptionLayer.flushEvents()
+
+  await engineOnUpdate(0.0)
+  adaptionLayer.forceUpdate(0.0)
+  adaptionLayer.flushEvents()
 }
