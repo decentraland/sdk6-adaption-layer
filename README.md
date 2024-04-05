@@ -1,4 +1,4 @@
-# SDK7 Adaption Layer
+# SDK6 Adaption Layer
 
 Adaption Layer from SDK6 to SDK7.
 
@@ -14,5 +14,5 @@ Copy your SDK6 Scene Assets to the root directory and the built script to `sdk6-
 
 The script is available on the following links
 
-- https://renderer-artifacts.decentraland.org/sdk7-adaption-layer/main/index.js
-- https://renderer-artifacts.decentraland.org/sdk7-adaption-layer/main/index.min.js
+- https://renderer-artifacts.decentraland.org/sdk6-adaption-layer/main/index.js
+- https://renderer-artifacts.decentraland.org/sdk6-adaption-layer/main/index.min.js

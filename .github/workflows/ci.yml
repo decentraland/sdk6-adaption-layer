@@ -23,7 +23,7 @@ jobs:
         run: npm run build
       - uses: actions/upload-artifact@v3
         with:
-          name: SDK7 Adaption Layer
+          name: SDK6 Adaption Layer
           path: |
             bin/index.js
             bin/index.min.js
@@ -44,13 +44,13 @@ jobs:
           npx @dcl/cdn-uploader@next \
               --bucket ${{ secrets.RENDERER_AWS_BUCKET }} \
               --local-folder "$(pwd)/bin" \
-              --bucket-folder 'sdk7-adaption-layer/${{steps.get-branch-realm-name.outputs.result}}' \
+              --bucket-folder 'sdk6-adaption-layer/${{steps.get-branch-realm-name.outputs.result}}' \
               --variant uncompressed
 
           npx @dcl/cdn-uploader@next \
               --bucket ${{ secrets.RENDERER_AWS_BUCKET }} \
               --local-folder "$(pwd)/bin" \
-              --bucket-folder 'sdk7-adaption-layer/${{ github.sha }}' \
+              --bucket-folder 'sdk6-adaption-layer/${{ github.sha }}' \
               --variant uncompressed
 
       - name: Find Comment
@@ -70,9 +70,9 @@ jobs:
           body: |
             # Test this pull request
             ## permalink
-            ${{ secrets.RENDERER_AWS_BASE_URL }}sdk7-adaption-layer/${{ github.sha }}/index.js
-            ${{ secrets.RENDERER_AWS_BASE_URL }}sdk7-adaption-layer/${{ github.sha }}/index.min.js
+            ${{ secrets.RENDERER_AWS_BASE_URL }}sdk6-adaption-layer/${{ github.sha }}/index.js
+            ${{ secrets.RENDERER_AWS_BASE_URL }}sdk6-adaption-layer/${{ github.sha }}/index.min.js
             ## branch name
-            ${{ secrets.RENDERER_AWS_BASE_URL }}sdk7-adaption-layer/${{steps.get-branch-realm-name.outputs.result}}/index.js
-            ${{ secrets.RENDERER_AWS_BASE_URL }}sdk7-adaption-layer/${{steps.get-branch-realm-name.outputs.result}}/index.min.js
+            ${{ secrets.RENDERER_AWS_BASE_URL }}sdk6-adaption-layer/${{steps.get-branch-realm-name.outputs.result}}/index.js
+            ${{ secrets.RENDERER_AWS_BASE_URL }}sdk6-adaption-layer/${{steps.get-branch-realm-name.outputs.result}}/index.min.js
           edit-mode: replace

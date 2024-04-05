@@ -17,7 +17,7 @@ async function getSceneCode(): Promise<{ code: string, developerMode: boolean }>
   const developerMode = sceneJson.runtimeVersion === '7'
   let fileName: string = ''
   if (developerMode) {
-    console.log('SDK7 Adaption Layer - Developer Mode')
+    console.log('SDK6 Adaption Layer - Developer Mode')
     const devSceneJson = await getSceneJsonData('sdk6-tests/scene.json')
     fileName = `sdk6-tests/${devSceneJson.main}`
   } else {
