@@ -15,6 +15,10 @@ jobs:
           node-version: 18.x
       - name: install dependencies
         run: npm install
+      - name: format
+        run: npm run format
+      - name: lint
+        run: npm run lint
       - name: npm run build:prod
         run: |
           npm run build:prod

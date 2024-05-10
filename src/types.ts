@@ -1,3 +1,4 @@
+import { type Entity } from '@dcl/ecs'
 export enum ECS6_CLASS_ID {
   TRANSFORM = 1,
   UUID_CALLBACK = 8,
@@ -65,29 +66,17 @@ export enum ECS6_CLASS_ID {
   VISIBLE_ON_EDIT = 302
 }
 
-export const ECS6_CLASS_ID_BYPASS = [
-  ECS6_CLASS_ID.UI_WORLD_SPACE_SHAPE,
-  ECS6_CLASS_ID.UI_SCREEN_SPACE_SHAPE,
-  ECS6_CLASS_ID.UI_CONTAINER_RECT,
-  ECS6_CLASS_ID.UI_CONTAINER_STACK,
-  ECS6_CLASS_ID.UI_TEXT_SHAPE,
-  ECS6_CLASS_ID.UI_INPUT_TEXT_SHAPE,
-  ECS6_CLASS_ID.UI_IMAGE_SHAPE,
-  ECS6_CLASS_ID.UI_SLIDER_SHAPE
-]
-
 export type Ecs6ComponentData = {
   classId?: number
   entityId?: string
   data?: any
   componentName?: string
 }
-import { Entity } from '@dcl/ecs'
 
 export type AdaptationLayerState = {
-  onUpdateFunctions: ((dt: number) => void)[]
-  onStartFunctions: (() => void)[]
-  onEventFunctions: ((event: any) => void)[]
+  onUpdateFunctions: Array<(dt: number) => void>
+  onStartFunctions: Array<() => void>
+  onEventFunctions: Array<(event: any) => void>
   subscribedEvents: Set<string>
 
   ecs7: {
@@ -120,22 +109,37 @@ export type AdaptationLayerState = {
       }
     >
 
-    events: EventItem[],
+    events: EventItem[]
   }
 
-  loadedModules: Record<string, any>,
+  loadedModules: Record<string, any>
 
-  developerMode: boolean,
+  developerMode: boolean
 }
 
-export type UpdateFunction = (state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) => void
-export type DeleteFunction = (state: AdaptationLayerState, ecs6EntityId: EntityID) => void
+export type UpdateFunction = (
+  state: AdaptationLayerState,
+  ecs6EntityId: EntityID,
+  payload: any
+) => void
+export type DeleteFunction = (
+  state: AdaptationLayerState,
+  ecs6EntityId: EntityID
+) => void
 
 export type ComponentAdaptation = {
   update: UpdateFunction
   remove: DeleteFunction
 }
 
+export type UiUpdateFunction = (
+  state: AdaptationLayerState,
+  componentId: string,
+  payload: any
+) => void
+export type UiComponentAdaptation = {
+  update: UiUpdateFunction
+}
 export type AttachEntityComponentEvent = {
   method: 'attachEntityComponent'
   data: {

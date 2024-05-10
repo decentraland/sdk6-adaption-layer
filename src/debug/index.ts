@@ -1,7 +1,7 @@
-import { AdaptationLayerState } from "../types";
+import { type AdaptationLayerState } from '../types'
 
-export function printState(state: AdaptationLayerState) {
-    console.log(`State:
+export function printState(state: AdaptationLayerState): void {
+  console.log(`State:
     ecs6.componentsWithId: ${getObjectLength(state.ecs6.componentsWithId)}
     ecs6.entities: ${getObjectLength(state.ecs6.entities)}
     ecs6.events: ${state.ecs6.events.length}
@@ -15,6 +15,6 @@ export function printState(state: AdaptationLayerState) {
     `)
 }
 
-function getObjectLength(object: any) {
-    return Object.keys(object).length
+function getObjectLength(object: any): number {
+  return Object.keys(object).length
 }

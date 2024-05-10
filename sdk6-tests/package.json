@@ -22,7 +22,8 @@
     "yarn": "please use npm"
   },
   "dependencies": {
-    "@dcl/ecs-scene-utils": "^1.7.5"
+    "@dcl/ecs-scene-utils": "^1.7.5",
+    "decentraland": "^3.19.0"
   },
   "bundleDependencies": [
     "@dcl/ecs-scene-utils"

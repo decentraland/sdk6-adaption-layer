@@ -1,20 +1,39 @@
-import { ColliderLayer, Material, TextureUnion, TextureWrapMode, InputAction } from '@dcl/ecs'
+import {
+  ColliderLayer,
+  InputAction,
+  Material,
+  TextureWrapMode,
+  type TextureUnion
+} from '@dcl/ecs'
 
-import { AdaptationLayerState, ECS6_ActionButton, ECS6_CLASS_ID } from '../../types'
+import {
+  ECS6_ActionButton,
+  ECS6_CLASS_ID,
+  type AdaptationLayerState
+} from '../../types'
+import { Font } from '@dcl/sdk/ecs'
+import { type ECS6ComponentFont } from '~system/EngineApi'
 
-export function getColliderLayer(payload: any) {
-  if (payload.isPointerBlocker || payload.withCollisions) {
+export function getColliderLayer(payload: any): number | undefined {
+  if (
+    payload.isPointerBlocker !== undefined ||
+    payload.withCollisions !== undefined
+  ) {
     let colliderLayer: ColliderLayer = ColliderLayer.CL_NONE
-    if (payload.isPointerBlocker) colliderLayer |= ColliderLayer.CL_POINTER
-    if (payload.withCollisions) colliderLayer |= ColliderLayer.CL_PHYSICS
+    if (payload.isPointerBlocker !== undefined)
+      colliderLayer |= ColliderLayer.CL_POINTER
+    if (payload.withCollisions !== undefined)
+      colliderLayer |= ColliderLayer.CL_PHYSICS
     return colliderLayer
   }
 
   return undefined
 }
 
-export function convertWrapMode(ecs6WrapMode: number | undefined): TextureWrapMode | undefined {
-  if (ecs6WrapMode) {
+export function convertWrapMode(
+  ecs6WrapMode: number | undefined
+): TextureWrapMode | undefined {
+  if (ecs6WrapMode !== undefined) {
     switch (ecs6WrapMode) {
       case 0:
         return TextureWrapMode.TWM_CLAMP
@@ -27,8 +46,11 @@ export function convertWrapMode(ecs6WrapMode: number | undefined): TextureWrapMo
   return undefined
 }
 
-export function convertTexture(state: AdaptationLayerState, textureEntityId: any): TextureUnion | undefined {
-  if (textureEntityId) {
+export function convertTexture(
+  state: AdaptationLayerState,
+  textureEntityId: any
+): TextureUnion | undefined {
+  if (textureEntityId !== undefined) {
     const textureData = state.ecs7.components[textureEntityId]
     const texturePayload = textureData.data
     switch (textureData.classId) {
@@ -50,9 +72,7 @@ export function convertTexture(state: AdaptationLayerState, textureEntityId: any
   return undefined
 }
 
-export function convertInputAction(action: ECS6_ActionButton | undefined) {
-  if (!action) return undefined
-
+export function convertInputAction(action: string | undefined): InputAction {
   switch (action) {
     case ECS6_ActionButton.POINTER:
       return InputAction.IA_POINTER
@@ -82,5 +102,40 @@ export function convertInputAction(action: ECS6_ActionButton | undefined) {
       return InputAction.IA_ACTION_5
     case ECS6_ActionButton.ACTION_6:
       return InputAction.IA_ACTION_6
+    default:
+      return InputAction.IA_ANY
   }
+}
+
+export function convertFont(
+  state: AdaptationLayerState,
+  fontEntityId: any
+): Font | undefined {
+  if (fontEntityId !== undefined) {
+    const fontData = state.ecs7.components[fontEntityId]
+    const fontPayload: ECS6ComponentFont = fontData.data
+    switch (fontPayload.src) {
+      case 'builtin:SF-UI-Text-Regular SDF':
+      case 'SansSerif':
+        return Font.F_SANS_SERIF
+
+      case 'builtin:SF-UI-Text-Heavy SDF':
+      case 'SansSerif_Heavy':
+        return Font.F_SANS_SERIF
+
+      case 'builtin:SF-UI-Text-Semibold SDF':
+      case 'SansSerif_SemiBold':
+        return Font.F_SANS_SERIF
+
+      case 'builtin:LiberationSans SDF':
+        return Font.F_SANS_SERIF
+
+      case 'SansSerif_Bold':
+        return Font.F_SANS_SERIF
+
+      default:
+        return Font.F_SANS_SERIF
+    }
+  }
+  return undefined
 }

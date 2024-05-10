@@ -7,6 +7,7 @@ export
 tsconfig.json
 tslint.json
 node_modules
+sdk6-tests/node_modules
 *.ts
 *.tsx
 .vscode
@@ -18,3 +19,4 @@ README.md
 *.zip
 *.rar
 src
+test-ts

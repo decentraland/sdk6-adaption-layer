@@ -1,13 +1,19 @@
-import { loadParcelIdentity } from "./ParcelIdentity"
-import { loadWeb3Provider } from "./Web3Provider"
+import { loadParcelIdentity } from './ParcelIdentity'
+import { loadWeb3Provider } from './Web3Provider'
 
-type ModuleDescriptorWithImplementation = ModuleDescriptor & { implementation: any }
-
-function getModuleMethods(module: any) {
-  return Object.keys(module).filter((value) => value !== 'default').map((e): MethodDescriptor => ({ name: e }))
+type ModuleDescriptorWithImplementation = ModuleDescriptor & {
+  implementation: any
 }
 
-export async function loadWrappedModule(moduleName: string): Promise<ModuleDescriptorWithImplementation> {
+function getModuleMethods(module: any): MethodDescriptor[] {
+  return Object.keys(module)
+    .filter((value) => value !== 'default')
+    .map((e): MethodDescriptor => ({ name: e }))
+}
+
+export async function loadWrappedModule(
+  moduleName: string
+): Promise<ModuleDescriptorWithImplementation> {
   const emptyModule: ModuleDescriptorWithImplementation = {
     methods: [],
     rpcHandle: 'empty',
@@ -101,8 +107,12 @@ export async function loadWrappedModule(moduleName: string): Promise<ModuleDescr
         }
       }
     }
-  } catch(e) {
-    console.error(`Module '${moduleName}' not found, reason ${e}, returning empty module`)
+  } catch (e) {
+    console.error(
+      `Module '${moduleName}' not found, reason ${
+        e as any
+      }, returning empty module`
+    )
   }
   return emptyModule
 }
