@@ -56,9 +56,9 @@ export function computeTransform(
       positionType: 'absolute',
       position: { left: computedPosition.x, top: computedPosition.y },
       width: size.x >= 0 ? size.x : 0,
-      height: size.y >= 0 ? size.y : 0
+      height: size.y >= 0 ? size.y : 0,
       // TODO: opacity
-      // opacity: uiShape.opacity ?? 1.0,
+      opacity: uiShape.opacity ?? 1.0,
     },
     size
   ]
@@ -86,14 +86,6 @@ export function computedVector2FromUiValue(
       retVec.y = height.value
     }
   }
-
-  console.log('computedVector2FromUiValue', {
-    width,
-    height,
-    parentSize,
-    retVec
-  })
-
   return retVec
 }
 
