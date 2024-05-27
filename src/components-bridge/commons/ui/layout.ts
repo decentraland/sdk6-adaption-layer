@@ -24,7 +24,7 @@ export function computeTransform(
   const position = computedVector2FromAlign(
     uiShape.hAlign,
     uiShape.vAlign,
-    ignoreSize ? { x: 0, y:0 } : size,
+    ignoreSize ? { x: 0, y: 0 } : size,
     parentSize
   )
   const computedPosition = {
@@ -59,7 +59,7 @@ export function computeTransform(
       width: size.x >= 0 ? size.x : 0,
       height: size.y >= 0 ? size.y : 0,
       // TODO: opacity
-      opacity: uiShape.opacity ?? 1.0,
+      opacity: uiShape.opacity ?? 1.0
     },
     size
   ]

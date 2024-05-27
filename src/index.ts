@@ -66,4 +66,3 @@ export async function onStart(): Promise<void> {
   MeshRenderer.setBox(mesh)
   Material.setPbrMaterial(mesh, { albedoColor: Color4.Red() })
 }
-

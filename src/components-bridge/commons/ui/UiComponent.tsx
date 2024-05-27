@@ -1,5 +1,9 @@
 import { Color4 } from '@dcl/sdk/math'
-import ReactEcs, { type UiBackgroundProps, UiEntity, type JSX } from '@dcl/sdk/react-ecs'
+import ReactEcs, {
+  type UiBackgroundProps,
+  UiEntity,
+  type JSX
+} from '@dcl/sdk/react-ecs'
 import {
   type ECS6ComponentUiContainerRect,
   type ECS6ComponentUiImage,
@@ -22,7 +26,6 @@ export function Ecs6UiComponent(
   c: ComponentNode,
   parentSize: Vector2
 ): JSX.Element {
-
   switch (c.classId) {
     case ECS6_CLASS_ID.UI_CONTAINER_RECT: {
       const [uiTransform, size] = computeTransform(c.value, parentSize)
@@ -52,10 +55,13 @@ export function Ecs6UiComponent(
       const [uiTransform, size] = computeTransform(c.value, parentSize)
       const imageValue = c.value as ECS6ComponentUiImage
       const texture = convertTexture(state, imageValue.source ?? '')
-      
+
       let uiBackground: UiBackgroundProps = {}
       if (texture?.tex?.$case === 'texture') {
-        uiBackground = { texture: { src: texture.tex.texture.src }, textureMode: 'stretch' }
+        uiBackground = {
+          texture: { src: texture.tex.texture.src },
+          textureMode: 'stretch'
+        }
 
         if (imageValue.sizeInPixels === true) {
           const lowerSrc = texture.tex.texture.src.toLowerCase()
@@ -64,38 +70,45 @@ export function Ecs6UiComponent(
 
             // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
             if (getTextureSize) {
-
-              getTextureSize({ src: lowerSrc }).then((data) => {
-                textureSizes.set(lowerSrc, { x: data.size.width, y: data.size.height } )
-              }).catch((e) => {
-                console.error('Error getting texture size', e)
-              })
+              getTextureSize({ src: lowerSrc })
+                .then((data) => {
+                  textureSizes.set(lowerSrc, {
+                    x: data.size.width,
+                    y: data.size.height
+                  })
+                })
+                .catch((e) => {
+                  console.error('Error getting texture size', e)
+                })
             }
-          } else{ 
-            const size = textureSizes.get(lowerSrc) ?? { x: 1, y: 1 }         
+          } else {
+            const size = textureSizes.get(lowerSrc) ?? { x: 1, y: 1 }
             if (size.x === 0) size.x = 1
             if (size.y === 0) size.y = 1
 
-            const sX = (imageValue.sourceLeft ?? 0)
-            const sY = (imageValue.sourceTop ?? 0)
-            const sW = (imageValue.sourceWidth ?? size.x)
-            const sH = (imageValue.sourceHeight ?? size.y)
+            const sX = imageValue.sourceLeft ?? 0
+            const sY = imageValue.sourceTop ?? 0
+            const sW = imageValue.sourceWidth ?? size.x
+            const sH = imageValue.sourceHeight ?? size.y
             const uvLeft = sX / size.x
-            const uvTop = 1 - (sY / size.y)
+            const uvTop = 1 - sY / size.y
             const uvRight = (sX + sW) / size.x
-            const uvBottom = 1 - ((sY + sH) / size.y)
+            const uvBottom = 1 - (sY + sH) / size.y
 
             uiBackground.uvs = [
-              uvLeft, uvBottom,
-              uvLeft, uvTop,
-              uvRight, uvTop,
-              uvRight, uvBottom
+              uvLeft,
+              uvBottom,
+              uvLeft,
+              uvTop,
+              uvRight,
+              uvTop,
+              uvRight,
+              uvBottom
             ]
           }
         } else {
           uiBackground.uvs = []
         }
-
       }
 
       // TODO: uvs - not used in the Web client.
@@ -104,7 +117,10 @@ export function Ecs6UiComponent(
       //    (uvs perms independnt of texture size, more reliable)
       //  uvs would cover `sourceLeft, sourceTop, sourceWidth, sourceHeight, sizeInPixels`
 
-      const [onMouseDown, onMouseUp]  = getClickHandler(state, imageValue.onClick)
+      const [onMouseDown, onMouseUp] = getClickHandler(
+        state,
+        imageValue.onClick
+      )
       return (
         <UiEntity
           key={'w' + c.__id}
@@ -170,7 +186,7 @@ export function Ecs6UiComponent(
     case ECS6_CLASS_ID.UI_INPUT_TEXT_SHAPE: {
       const [uiTransform, size] = computeTransform(c.value, parentSize)
       // const inputValue = c.value as ECS6ComponentUiInputText
-    
+
       return (
         <UiEntity key={'w' + c.__id} uiTransform={uiTransform}>
           {c.children.map(($) => Ecs6UiComponent(state, $, size))}
