@@ -8,7 +8,8 @@ import {
 
 export function computeTransform(
   uiShape: ECS6ComponentUiShape,
-  parentSize: Vector2
+  parentSize: Vector2,
+  ignoreSize: boolean = false
 ): [UiTransformProps, Vector2] {
   const size = computedVector2FromUiValue(
     uiShape.width,
@@ -23,7 +24,7 @@ export function computeTransform(
   const position = computedVector2FromAlign(
     uiShape.hAlign,
     uiShape.vAlign,
-    size,
+    ignoreSize ? { x: 0, y:0 } : size,
     parentSize
   )
   const computedPosition = {

@@ -9,13 +9,14 @@ export function renderEcs6UiRootComponent(
   c: ComponentNode
 ): JSX.Element {
   const canvasInfo = UiCanvasInformation.get(engine.RootEntity)
-  const canvasSize = { x: canvasInfo.width, y: canvasInfo.height }
+  const canvasSize = { x: canvasInfo.width, y: canvasInfo.height - 100 }
 
   return (
     <UiEntity
       key={`root${c.__id}`}
       uiTransform={{
-        position: { left: 0, top: 0 },
+        positionType: 'absolute',
+        position: { left: 0, top: 70 },
         width: '100%',
         height: '100%'
       }}

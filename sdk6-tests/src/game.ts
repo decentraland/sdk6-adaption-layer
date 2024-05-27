@@ -1,5 +1,7 @@
 /// --- Set up a system ---
 import * as utils from '@dcl/ecs-scene-utils'
+import * as ui from "@dcl/ui-scene-utils";
+import * as npc from "@dcl/npc-scene-utils";
 
 // class RotatorSystem {
 //   // this group will contain every entity that has a Transform component
@@ -20,72 +22,72 @@ import * as utils from '@dcl/ecs-scene-utils'
 // // Add a new instance of the system to the engine
 // engine.addSystem(new RotatorSystem())
 
-// /// --- Spawner function ---
+/// --- Spawner function ---
 
-// function spawnCube(x: number, y: number, z: number) {
-//   // create the entity
-//   const cube = new Entity()
+function spawnCube(x: number, y: number, z: number) {
+  // create the entity
+  const cube = new Entity()
 
-//   // add a transform to the entity
-//   cube.addComponent(new Transform({ position: new Vector3(x, y, z) }))
+  // add a transform to the entity
+  cube.addComponent(new Transform({ position: new Vector3(x, y, z) }))
 
-//   // add a shape to the entity
-//   cube.addComponent(new BoxShape())
+  // add a shape to the entity
+  cube.addComponent(new BoxShape())
 
-//   const material = new Material()
-//   material.albedoColor = Color3.Red()
-//   cube.addComponent(material)
+  const material = new Material()
+  material.albedoColor = Color3.Red()
+  cube.addComponent(material)
 
-//   // add the entity to the engine
-//   engine.addEntity(cube)
+  // add the entity to the engine
+  engine.addEntity(cube)
 
-//   cube.addComponent(
-//     new utils.TriggerComponent(
-//       new utils.TriggerBoxShape(new Vector3(5,5,5)), //shape
-//       {
-//         onCameraEnter: () => {
-//           cube.getComponent(Material).albedoColor = Color3.Blue()
-//         },
-//         onCameraExit: () => {
-//           cube.getComponent(Material).albedoColor = Color3.Red()
-//         }
-//       }
-//     )
-//   )
+  cube.addComponent(
+    new utils.TriggerComponent(
+      new utils.TriggerBoxShape(new Vector3(5,5,5)), //shape
+      {
+        onCameraEnter: () => {
+          cube.getComponent(Material).albedoColor = Color3.Blue()
+        },
+        onCameraExit: () => {
+          cube.getComponent(Material).albedoColor = Color3.Red()
+        }
+      }
+    )
+  )
 
-//   cube.addComponent(
-//     new OnPointerUp(() => {
-//       log('OnPointerUp', cube)
-//     })
-//   )
-//   return cube
-// }
+  cube.addComponent(
+    new OnPointerUp(() => {
+      log('OnPointerUp', cube)
+    })
+  )
+  return cube
+}
 
-// /// --- Spawn a cube ---
+/// --- Spawn a cube ---
 
-// const cube = spawnCube(8, 1, 8)
-// log('Hello world')
-// cube.addComponent(
-//   new OnPointerDown(() => {
-//     log('OnPointerDown')
-//     cube.getComponent(Transform).scale.z *= 1.1
-//     cube.getComponent(Transform).scale.x *= 0.9
+const cube = spawnCube(8, 1, 8)
+log('Hello world')
+cube.addComponent(
+  new OnPointerDown(() => {
+    log('OnPointerDown')
+    cube.getComponent(Transform).scale.z *= 1.1
+    cube.getComponent(Transform).scale.x *= 0.9
 
-//     spawnCube(Math.random() * 8 + 1, Math.random() * 8, Math.random() * 8 + 1)
-//   })
-// )
+    spawnCube(Math.random() * 8 + 1, Math.random() * 8, Math.random() * 8 + 1)
+  })
+)
 
 
-// cube.addComponent(
-//   new OnPointerHoverEnter(() => {
-//     log('OnPointerHoverEnter')
-//   })
-// )
-// cube.addComponent(
-//   new OnPointerHoverExit(() => {
-//     log('OnPointerHoverExit')
-//   })
-// )
+cube.addComponent(
+  new OnPointerHoverEnter(() => {
+    log('OnPointerHoverEnter')
+  })
+)
+cube.addComponent(
+  new OnPointerHoverExit(() => {
+    log('OnPointerHoverExit')
+  })
+)
 
 function testUiA() {
     // Create screenspace component
@@ -220,17 +222,17 @@ function testUiC() {
     // Create screenspace component
     const canvas = new UICanvas()
 
-    const superParent = createContainer(0, 0, 'center', 'bottom', '100%', '100%', Color4.Red(), canvas, true)
+    const superParent = createContainer(0, -35, 'center', 'bottom', '50%', '50%', Color4.Red(), canvas, true)
 
-    const childA = createContainer(0, 0, 'left', 'top', '20%', '20%', Color4.Green(), superParent)
-    const childB = createContainer(0, 0, 'left', 'center', '20%', '20%', Color4.Blue(), superParent)
-    const childC = createContainer(0, 0, 'left', 'bottom', '20%', '20%', Color4.Purple(), superParent)
-    const childD = createContainer(0, 0, 'center', 'top', '10%', '20%', Color4.Green(), superParent)
-    const childE = createContainer(0, 0, 'center', 'center', '10%', '20%', Color4.Blue(), superParent)
-    const childF = createContainer(0, 0, 'center', 'bottom', '10%', '20%', Color4.Purple(), superParent)
-    const childG = createContainer(0, 0, 'right', 'top', '20%', '10%', Color4.Green(), superParent)
-    const childH = createContainer(0, 0, 'right', 'center', '20%', '10%', Color4.Blue(), superParent)
-    const childI = createContainer(0, 0, 'right', 'bottom', '20%', '10%', Color4.Purple(), superParent)
+    const childA = createContainer(0, 75, 'left', 'top', '20%', '20%', Color4.Green(), superParent)
+    const childB = createContainer(0, 50, 'left', 'center', '20%', '20%', Color4.Blue(), superParent)
+    const childC = createContainer(0, 50, 'left', 'bottom', '20%', '20%', Color4.Purple(), superParent)
+    const childD = createContainer(0, 50, 'center', 'top', '10%', '20%', Color4.Green(), superParent)
+    const childE = createContainer(0, 50, 'center', 'center', '10%', '20%', Color4.Blue(), superParent)
+    const childF = createContainer(0, 50, 'center', 'bottom', '10%', '20%', Color4.Purple(), superParent)
+    const childG = createContainer(0, 50, 'right', 'top', '20%', '10%', Color4.Green(), superParent)
+    const childH = createContainer(0, 50, 'right', 'center', '20%', '10%', Color4.Blue(), superParent)
+    const childI = createContainer(0, 50, 'right', 'bottom', '20%', '10%', Color4.Purple(), superParent)
 
     const textA = createText(childE, ` Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed felis enim, placerat vel magna in, vehicula finibus leo. Nam rhoncus gravida rhoncus. Vivamus id velit ultrices, congue nulla ut, accumsan turpis. Nulla iaculis sagittis maximus. Nullam quam odio, ultrices nec lorem congue, posuere egestas ligula. Etiam ac consequat arcu. Vivamus ut velit felis. Curabitur eget lorem non odio ullamcorper pharetra ut ac justo. Cras sit amet velit mauris. Pellentesque nec cursus nulla, et facilisis nisl. Nunc porttitor velit eu metus elementum, id sodales mi faucibus. In hac habitasse platea dictumst. Phasellus eget dignissim tortor, sed vulputate ipsum. Pellentesque varius lacus vel nibh fringilla, eu fringilla nulla imperdiet. Curabitur sed nisl facilisis orci porta malesuada. In hac habitasse platea dictumst.
 
@@ -333,4 +335,35 @@ function testUiI() {
 
 }
 
-testUiI()
+function testUiK() {
+  // Create screenspace component
+  const canvas = new UICanvas()
+
+  const color = Color4.Blue()
+  color.a = 0.4
+
+  const superParent = createContainer(0, 0, 'center', 'center', '400px', '350px', color, canvas, true)
+  const textValue = `A cocktail of Pepper Spray with Fertilizers will increase it's potency!\n\nChoose the number of Fertilizers to use with the Pepper Spray!\n\nNote: Apple Shirt will have no effect on the 10 Fertilizer option.`
+
+  const textA = createText(superParent, textValue, 'center', 'bottom', 'center', 'top', '300px', '100%', Color4.Black(), 1)
+  textA.fontSize = 16
+  textA.textWrapping = false
+  textA.positionY = 160
+}
+
+// ui.displayAnnouncement('Hello world asd', 500)
+testUiK()
+
+// const dialog = new npc.DialogWindow()
+// dialog.openDialogWindow([{
+//     text: "This is the first dialog",
+//     isQuestion: false
+// },
+// {
+//     text: "This is the second dialog",
+//     isQuestion: false,
+//     isEndOfDialog: true
+// }
+// ])
+
+

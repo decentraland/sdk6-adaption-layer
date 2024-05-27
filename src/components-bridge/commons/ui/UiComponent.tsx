@@ -12,12 +12,8 @@ import { type ComponentNode } from './core'
 import { computeTransform } from './layout'
 import { convertUiFontFromFont, textAlignFromHV } from './uiText'
 
-import { getTextureSize } from '~system/EngineApi'
+import { getTextureSize } from '~system/AdaptationLayerHelper'
 import { getClickHandler } from './events'
-
-declare module '~system/EngineApi' {
-  function getTextureSize(body: { src: string }) : Promise<{ src: string, size: { width: number, height: number}}>
-}
 
 const textureSizes = new Map<string, Vector2 | null>()
 
@@ -26,10 +22,10 @@ export function Ecs6UiComponent(
   c: ComponentNode,
   parentSize: Vector2
 ): JSX.Element {
-  const [uiTransform, size] = computeTransform(c.value, parentSize)
 
   switch (c.classId) {
     case ECS6_CLASS_ID.UI_CONTAINER_RECT: {
+      const [uiTransform, size] = computeTransform(c.value, parentSize)
       const container = c.value as ECS6ComponentUiContainerRect
       const color = Color4.create(
         container.color?.r ?? 1.0,
@@ -53,6 +49,7 @@ export function Ecs6UiComponent(
     }
 
     case ECS6_CLASS_ID.UI_IMAGE_SHAPE: {
+      const [uiTransform, size] = computeTransform(c.value, parentSize)
       const imageValue = c.value as ECS6ComponentUiImage
       const texture = convertTexture(state, imageValue.source ?? '')
       
@@ -79,21 +76,24 @@ export function Ecs6UiComponent(
             if (size.x === 0) size.x = 1
             if (size.y === 0) size.y = 1
 
-            const sourceLeft = (imageValue.sourceLeft ?? 0) / size.x
-            const sourceTop = (imageValue.sourceTop ?? 0) / size.y
-            const sourceWidth = imageValue.sourceWidth !== undefined ? (sourceLeft + imageValue.sourceWidth) / size.x : 1.0
-            const sourceHeight = imageValue.sourceHeight !== undefined ? (sourceTop + imageValue.sourceHeight) / size.y : 1.0
+            const sX = (imageValue.sourceLeft ?? 0)
+            const sY = (imageValue.sourceTop ?? 0)
+            const sW = (imageValue.sourceWidth ?? size.x)
+            const sH = (imageValue.sourceHeight ?? size.y)
+            const uvLeft = sX / size.x
+            const uvTop = 1 - (sY / size.y)
+            const uvRight = (sX + sW) / size.x
+            const uvBottom = 1 - ((sY + sH) / size.y)
+
             uiBackground.uvs = [
-              sourceLeft, sourceHeight,
-              sourceLeft, sourceTop,
-              sourceWidth, sourceTop,
-              sourceWidth, sourceHeight
+              uvLeft, uvBottom,
+              uvLeft, uvTop,
+              uvRight, uvTop,
+              uvRight, uvBottom
             ]
-            uiBackground.textureMode = 'stretch'
           }
         } else {
           uiBackground.uvs = []
-        
         }
 
       }
@@ -119,6 +119,7 @@ export function Ecs6UiComponent(
     }
 
     case ECS6_CLASS_ID.UI_TEXT_SHAPE: {
+      const [uiTransform, size] = computeTransform(c.value, parentSize, false)
       const textValue = c.value as ECS6ComponentUiText
 
       if (textValue.textWrapping === true) {
@@ -141,7 +142,7 @@ export function Ecs6UiComponent(
               textValue.hTextAlign,
               textValue.vTextAlign
             ),
-            fontSize: (textValue.fontSize?? 10) * 1.6,
+            fontSize: textValue.fontSize ?? 10,
             font: convertUiFontFromFont(convertFont(state, textValue.font)),
             value: textValue.value ?? '',
             color: Color4.create(
@@ -157,6 +158,7 @@ export function Ecs6UiComponent(
               textValue.outlineColor?.a ?? 1.0
             ),
             outlineWidth: textValue.outlineWidth ?? 0,
+            textWrapping: textValue.textWrapping ?? false
           }}
         >
           {c.children.map(($) => Ecs6UiComponent(state, $, size))}
@@ -166,6 +168,7 @@ export function Ecs6UiComponent(
 
     // TODO
     case ECS6_CLASS_ID.UI_INPUT_TEXT_SHAPE: {
+      const [uiTransform, size] = computeTransform(c.value, parentSize)
       // const inputValue = c.value as ECS6ComponentUiInputText
     
       return (
@@ -176,6 +179,7 @@ export function Ecs6UiComponent(
     }
 
     case ECS6_CLASS_ID.UI_SCREEN_SPACE_SHAPE: {
+      const [uiTransform, size] = computeTransform(c.value, parentSize)
       return (
         <UiEntity key={'w' + c.__id} uiTransform={uiTransform}>
           {c.children.map(($) => Ecs6UiComponent(state, $, size))}
@@ -190,11 +194,13 @@ export function Ecs6UiComponent(
     // uiWorldSpaceShape
     // uiFullScreenShape
 
-    default:
+    default: {
+      const [uiTransform, size] = computeTransform(c.value, parentSize)
       return (
         <UiEntity key={'w' + c.__id} uiTransform={uiTransform}>
           {c.children.map(($) => Ecs6UiComponent(state, $, size))}
         </UiEntity>
       )
+    }
   }
 }

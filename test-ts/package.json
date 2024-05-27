@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@dcl/js-runtime": "^7.4.15",
-    "@dcl/protocol": "^1.0.0-2569677750.commit-6ce832a"
+    "@dcl/protocol": "^1.0.0-2569677750.commit-6ce832a",
+    "p-queue": "^8.0.1"
   }
 }

@@ -64,5 +64,6 @@ export async function onStart(): Promise<void> {
 
   const mesh = engine.addEntity()
   MeshRenderer.setBox(mesh)
-  Material.setPbrMaterial(mesh, { albedoColor: Color4.Yellow() })
+  Material.setPbrMaterial(mesh, { albedoColor: Color4.Red() })
 }
+
