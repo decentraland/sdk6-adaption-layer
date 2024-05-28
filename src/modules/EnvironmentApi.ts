@@ -39,7 +39,7 @@ export function create(): Record<string, any> {
    * Returns whether the scene is running in preview mode or not
    */
   async function isPreviewMode(): Promise<boolean> {
-    return true 
+    return true
     // const realm = await getRealm({})
     // return realm.realmInfo?.isPreview ?? false
   }

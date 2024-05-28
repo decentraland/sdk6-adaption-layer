@@ -1,4 +1,4 @@
-import { movePlayerTo, triggerEmote } from "~system/RestrictedActions";
+import { movePlayerTo, triggerEmote } from '~system/RestrictedActions'
 
 export type PositionType = { x: number; y: number; z: number }
 
@@ -36,7 +36,7 @@ export function create(): Record<string, any> {
     newPosition: PositionType,
     cameraTarget?: PositionType
   ): Promise<void> {
-    await movePlayerTo({newRelativePosition: newPosition, cameraTarget})
+    await movePlayerTo({ newRelativePosition: newPosition, cameraTarget })
   }
 
   /**
