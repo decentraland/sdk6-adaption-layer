@@ -1,20 +1,31 @@
+import { type ECS6ComponentUuidCallback } from '~system/EngineApi'
 import { getSdk6Entity, sdk7EnsureEntity } from '../ecs7/ecs7'
-import { AdaptationLayerState } from '../types'
+import { type AdaptationLayerState } from '../types'
 import { convertInputAction } from './commons/utils'
-import { Entity, PBPointerEventsResult, PointerEventType, PointerEvents, Schemas, engine } from '@dcl/sdk/ecs'
+import {
+  type Entity,
+  type PBPointerEventsResult,
+  PointerEventType,
+  PointerEvents,
+  Schemas,
+  engine
+} from '@dcl/sdk/ecs'
 import { Vector3 } from '@dcl/sdk/math'
 
 export const PointerEventStateComponent = engine.defineComponent(
-  "pointerEventStateComponent",
+  'pointerEventStateComponent',
   {
-    registeredActions: Schemas.Array(Schemas.Map({
-      inputAction: Schemas.Number,
-      eventType: Schemas.Number,
-      uuid: Schemas.String
-    })),
-  })
+    registeredActions: Schemas.Array(
+      Schemas.Map({
+        inputAction: Schemas.Number,
+        eventType: Schemas.Number,
+        uuid: Schemas.String
+      })
+    )
+  }
+)
 
-function convertPointerEventTypeToSDK6(type: PointerEventType) {
+function convertPointerEventTypeToSDK6(type: PointerEventType): 0 | 1 {
   /** SDK6
    * DOWN = 0,
    * UP = 1
@@ -29,7 +40,7 @@ function convertPointerEventTypeToSDK6(type: PointerEventType) {
   }
 }
 
-function getPointerEventType(type: string): PointerEventType {
+function getPointerEventType(type: string | undefined): PointerEventType {
   switch (type) {
     case 'pointerDown':
       return PointerEventType.PET_DOWN
@@ -39,51 +50,62 @@ function getPointerEventType(type: string): PointerEventType {
       return PointerEventType.PET_HOVER_ENTER
     case 'pointerHoverExit':
       return PointerEventType.PET_HOVER_LEAVE
+    default:
+      return PointerEventType.PET_DOWN
   }
-
-  return PointerEventType.PET_DOWN
 }
 
-export function convertPointerEventToSDK6(state: AdaptationLayerState, event: PBPointerEventsResult): GlobalInputEventResult {
+export function convertPointerEventToSDK6(
+  state: AdaptationLayerState,
+  event: PBPointerEventsResult
+): GlobalInputEventResult {
   return {
     buttonId: event.button,
-    direction: event.hit?.direction || Vector3.create(0.0, 0.0, 0.0),
-    origin: event.hit?.globalOrigin || Vector3.create(0.0, 0.0, 0.0),
+    direction: event.hit?.direction ?? Vector3.create(0.0, 0.0, 0.0),
+    origin: event.hit?.globalOrigin ?? Vector3.create(0.0, 0.0, 0.0),
     type: convertPointerEventTypeToSDK6(event.state),
-    hit: event.hit ? {
-      entityId: getSdk6Entity(state, event.hit!.entityId as Entity) || '',
-      hitPoint: event.hit!.position || Vector3.create(0.0, 0.0, 0.0),
-      length: event.hit!.length,
-      meshName: event.hit!.meshName || '',
-      normal: event.hit!.normalHit || Vector3.create(0.0, 0.0, 0.0),
-      worldNormal: event.hit!.normalHit || Vector3.create(0.0, 0.0, 0.0)
-    } : undefined
+    hit:
+      event.hit !== undefined
+        ? {
+            entityId: getSdk6Entity(state, event.hit.entityId as Entity) ?? '',
+            hitPoint: event.hit.position ?? Vector3.create(0.0, 0.0, 0.0),
+            length: event.hit.length,
+            meshName: event.hit.meshName ?? '',
+            normal: event.hit.normalHit ?? Vector3.create(0.0, 0.0, 0.0),
+            worldNormal: event.hit.normalHit ?? Vector3.create(0.0, 0.0, 0.0)
+          }
+        : undefined
   }
 }
 
-export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) {
+function update(
+  state: AdaptationLayerState,
+  ecs6EntityId: EntityID,
+  payload: ECS6ComponentUuidCallback
+): void {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
 
   const component = PointerEventStateComponent.getMutableOrNull(ecs7Entity)
   if (component === null) {
     // create event component
     PointerEventStateComponent.create(ecs7Entity, {
-      registeredActions: [{
-        eventType: getPointerEventType(payload.type),
-        inputAction: convertInputAction(payload.button)!,
-        uuid: payload.uuid
-      }]
+      registeredActions: [
+        {
+          eventType: getPointerEventType(payload.type),
+          inputAction: convertInputAction(payload.button),
+          uuid: payload.uuid ?? '' // TODO: it should be an UUID
+        }
+      ]
     })
   } else {
     component.registeredActions.push({
       eventType: getPointerEventType(payload.type),
-      inputAction: convertInputAction(payload.button)!,
-      uuid: payload.uuid
+      inputAction: convertInputAction(payload.button),
+      uuid: payload.uuid ?? '' // TODO: it should be an UUID
     })
   }
 
-
-  if (payload.hoverText || payload.showFeedback) {
+  if (payload.hoverText !== undefined || payload.showFeedback !== undefined) {
     const pointerEvent = PointerEvents.getOrCreateMutable(ecs7Entity)
 
     pointerEvent.pointerEvents.push({
@@ -98,8 +120,13 @@ export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payl
   }
 }
 
-export function remove(state: AdaptationLayerState, ecs6EntityId: EntityID) {
+function remove(state: AdaptationLayerState, ecs6EntityId: EntityID): void {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
   PointerEvents.deleteFrom(ecs7Entity)
   PointerEventStateComponent.deleteFrom(ecs7Entity)
+}
+
+export const Ecs6UuidCallbackConvertion = {
+  update,
+  remove
 }

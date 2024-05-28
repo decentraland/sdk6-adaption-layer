@@ -1,5 +1,5 @@
 import { adaptToEcs7 } from '../ecs7/adapter'
-import { AdaptationLayerState } from '../types'
+import { type AdaptationLayerState } from '../types'
 
 function componentExists(state: AdaptationLayerState, id: string): boolean {
   return state.ecs6.componentsWithId[id] !== undefined
@@ -9,13 +9,20 @@ function entityExists(state: AdaptationLayerState, entityId: string): boolean {
   return state.ecs6.entities[entityId] !== undefined
 }
 
-function componentNameExistsInEntity(state: AdaptationLayerState, entityId: string, componentName: string): boolean {
-  if (!entityExists(state, entityId)) {
-    return false
-  }
+// function componentNameExistsInEntity(
+//   state: AdaptationLayerState,
+//   entityId: string,
+//   componentName: string
+// ): boolean {
+//   if (!entityExists(state, entityId)) {
+//     return false
+//   }
 
-  return entityExists(state, entityId) && state.ecs6.entities[entityId].componentsName[componentName] !== undefined
-}
+//   return (
+//     entityExists(state, entityId) &&
+//     state.ecs6.entities[entityId].componentsName[componentName] !== undefined
+//   )
+// }
 
 /**
  *
@@ -45,7 +52,10 @@ export function proxyAttachEntityComponent(
     }
   }
 
-  state.ecs6.entities[entityId].componentsName[componentName] = { classId: state.ecs6.componentsWithId[id].classId, id }
+  state.ecs6.entities[entityId].componentsName[componentName] = {
+    classId: state.ecs6.componentsWithId[id].classId,
+    id
+  }
 
   state.ecs6.events.push({
     method: 'attachEntityComponent',
@@ -63,7 +73,11 @@ export function proxyAttachEntityComponent(
  * @param entityId
  * @param componentName
  */
-export function proxyRemoveEntityComponent(state: AdaptationLayerState, entityId: string, componentName: string): void {
+export function proxyRemoveEntityComponent(
+  state: AdaptationLayerState,
+  entityId: string,
+  componentName: string
+): void {
   state.ecs6.events.push({
     method: 'removeEntityComponent',
     data: {
@@ -78,7 +92,10 @@ export function proxyRemoveEntityComponent(state: AdaptationLayerState, entityId
  * @param state
  * @param entityId
  */
-export function proxyAddEntity(state: AdaptationLayerState, entityId: EntityID): void {
+export function proxyAddEntity(
+  state: AdaptationLayerState,
+  entityId: EntityID
+): void {
   state.ecs6.events.push({
     method: 'addEntity',
     data: {
@@ -93,7 +110,11 @@ export function proxyAddEntity(state: AdaptationLayerState, entityId: EntityID):
  * @param entityId
  * @param parentId
  */
-export function proxySetParent(state: AdaptationLayerState, entityId: string, parentId: string): void {
+export function proxySetParent(
+  state: AdaptationLayerState,
+  entityId: string,
+  parentId: string
+): void {
   state.ecs6.events.push({
     method: 'setParent',
     data: {
@@ -108,7 +129,10 @@ export function proxySetParent(state: AdaptationLayerState, entityId: string, pa
  * @param state
  * @param entityId
  */
-export function proxyRemoveEntity(state: AdaptationLayerState, entityId: EntityID): void {
+export function proxyRemoveEntity(
+  state: AdaptationLayerState,
+  entityId: EntityID
+): void {
   state.ecs6.events.push({
     method: 'removeEntity',
     data: {
@@ -124,7 +148,12 @@ export function proxyRemoveEntity(state: AdaptationLayerState, entityId: EntityI
  * @param componentName
  * @param classId
  */
-export function proxyComponentCreated(state: AdaptationLayerState, id: string, componentName: string, classId: number) {
+export function proxyComponentCreated(
+  state: AdaptationLayerState,
+  id: string,
+  componentName: string,
+  classId: number
+): void {
   state.ecs6.componentsWithId[id] = {
     componentName,
     classId,
@@ -147,7 +176,10 @@ export function proxyComponentCreated(state: AdaptationLayerState, id: string, c
  * @param state
  * @param id
  */
-export function proxyComponentDisposed(state: AdaptationLayerState, id: string) {
+export function proxyComponentDisposed(
+  state: AdaptationLayerState,
+  id: string
+): void {
   state.ecs6.events.push({
     method: 'componentDisposed',
     data: {
@@ -162,7 +194,11 @@ export function proxyComponentDisposed(state: AdaptationLayerState, id: string) 
  * @param id
  * @param json
  */
-export function proxyComponentUpdated(state: AdaptationLayerState, id: string, json: string) {
+export function proxyComponentUpdated(
+  state: AdaptationLayerState,
+  id: string,
+  json: string
+): void {
   state.ecs6.componentsWithId[id].json = json
 
   state.ecs6.events.push({
@@ -195,10 +231,6 @@ export function proxyUpdateEntityComponent(
     }
   }
 
-  if (!entityExists(state, entityId)) {
-    state.ecs6.entities[entityId] = { componentsName: {} }
-  }
-
   state.ecs6.events.push({
     method: 'updateEntityComponent',
     data: {
@@ -210,7 +242,7 @@ export function proxyUpdateEntityComponent(
   })
 }
 
-export function proxyHandleTick(state: AdaptationLayerState) {
+export function proxyHandleTick(state: AdaptationLayerState): void {
   for (const event of state.ecs6.events) {
     adaptToEcs7(state, event)
   }

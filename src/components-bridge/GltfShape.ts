@@ -1,15 +1,20 @@
 import { sdk7EnsureEntity } from '../ecs7/ecs7'
-import { AdaptationLayerState } from '../types'
+import { type AdaptationLayerState, type ComponentAdaptation } from '../types'
 
 import { GltfContainer } from '@dcl/ecs'
 import { getColliderLayer } from './commons/utils'
+import { type ECS6ComponentGltfShape } from '~system/EngineApi'
 
-export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) {
+function update(
+  state: AdaptationLayerState,
+  ecs6EntityId: EntityID,
+  payload: ECS6ComponentGltfShape
+): void {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
 
-  if (payload.visible) {
+  if (payload.visible === true) {
     GltfContainer.createOrReplace(ecs7Entity, {
-      src: payload.src,
+      src: payload.src ?? '',
       invisibleMeshesCollisionMask: getColliderLayer(payload)
     })
   } else {
@@ -17,7 +22,12 @@ export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payl
   }
 }
 
-export function remove(state: AdaptationLayerState, ecs6EntityId: EntityID) {
+function remove(state: AdaptationLayerState, ecs6EntityId: EntityID): void {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
   GltfContainer.deleteFrom(ecs7Entity)
+}
+
+export const Ecs6GltfShapeConvertion: ComponentAdaptation = {
+  update,
+  remove
 }

@@ -1,11 +1,17 @@
-import { AdaptationLayerState } from '../types';
+import { type AdaptationLayerState } from '../types'
 
 import { engine, inputSystem } from '@dcl/sdk/ecs'
 import { Quaternion } from '@dcl/sdk/math'
 import * as utils from '@dcl-sdk/utils'
-import { PointerEventStateComponent, convertPointerEventToSDK6 } from '../components-bridge/UuidCallback';
+import {
+  PointerEventStateComponent,
+  convertPointerEventToSDK6
+} from '../components-bridge/UuidCallback'
 
-export function sendEventToSDK6(onEventFunctions: ((event: any) => void)[], event: EngineEvent) {
+export function sendEventToSDK6(
+  onEventFunctions: Array<(event: any) => void>,
+  event: EngineEvent
+): void {
   for (const cb of onEventFunctions) {
     try {
       cb(event)
@@ -15,7 +21,7 @@ export function sendEventToSDK6(onEventFunctions: ((event: any) => void)[], even
   }
 }
 
-export function updateEventSystem(state: AdaptationLayerState) {
+export function updateEventSystem(state: AdaptationLayerState): void {
   // TODO: We can cache it, and send only when changes
 
   if (state.subscribedEvents.has('positionChanged')) {
@@ -24,8 +30,8 @@ export function updateEventSystem(state: AdaptationLayerState) {
       data: {
         position: utils.getWorldPosition(engine.PlayerEntity),
         cameraPosition: utils.getWorldPosition(engine.CameraEntity),
-        playerHeight: 1.6,
-      } as IEvents['positionChanged']
+        playerHeight: 1.6
+      } satisfies IEvents['positionChanged']
     })
   }
 
@@ -35,20 +41,25 @@ export function updateEventSystem(state: AdaptationLayerState) {
       type: 'rotationChanged',
       data: {
         quaternion: rotation,
-        rotation: Quaternion.toEulerAngles(rotation),
-      } as IEvents['rotationChanged']
+        rotation: Quaternion.toEulerAngles(rotation)
+      } satisfies IEvents['rotationChanged']
     })
   }
-  for (const [entity, component] of engine.getEntitiesWith(PointerEventStateComponent)) {
+  for (const [entity, component] of engine.getEntitiesWith(
+    PointerEventStateComponent
+  )) {
     for (const action of component.registeredActions) {
-      const event = inputSystem.getInputCommand(action.inputAction, action.eventType)
-      if (event && event?.hit?.entityId == entity) {
+      const event = inputSystem.getInputCommand(
+        action.inputAction,
+        action.eventType
+      )
+      if (event !== undefined && event?.hit?.entityId === entity) {
         sendEventToSDK6(state.onEventFunctions, {
           type: 'uuidEvent',
           data: {
             uuid: action.uuid,
             payload: convertPointerEventToSDK6(state, event)
-          } as IEvents['uuidEvent']
+          } satisfies IEvents['uuidEvent']
         })
       }
     }

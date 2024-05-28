@@ -3,16 +3,28 @@
   "version": "1.0.0",
   "description": "SDK7 Template scene",
   "scripts": {
-    "start": "sdk-commands start",
+    "start": "sdk-commands start --customEntryPoint",
     "deploy": "sdk-commands deploy",
     "build": "sdk-commands build --skip-install --customEntryPoint",
     "build:prod": "sdk-commands build --skip-install --production --customEntryPoint",
     "upgrade-sdk": "npm install --save-dev @dcl/sdk@latest",
-    "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next"
+    "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next",
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "lint:fix": "eslint --fix src/**/*.{ts,tsx}",
+    "format": "prettier --config .prettierrc -c src/**/*.{ts,tsx}",
+    "format:fix": "prettier -w --config .prettierrc -c src/**/*.{ts,tsx}"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "7.4.0",
-    "@dcl/sdk": "^7.3.30"
+    "@dcl/js-runtime": "7.5.1-9259817556.commit-b9f9e94",
+    "@dcl/sdk": "7.5.1-9259817556.commit-b9f9e94",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard-with-typescript": "^39.1.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.33.2",
+    "prettier": "3.0.3"
   },
   "engines": {
     "node": ">=16.0.0",

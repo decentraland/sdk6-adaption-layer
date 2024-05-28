@@ -1,48 +1,34 @@
+import { type ECS6ComponentMaterial } from '~system/EngineApi'
 import { sdk7EnsureEntity } from '../ecs7/ecs7'
-import { AdaptationLayerState, ECS6_CLASS_ID } from '../types'
+import { type AdaptationLayerState, type ComponentAdaptation } from '../types'
 
-import { Material, TextureUnion, TextureWrapMode } from '@dcl/ecs'
+import { Material } from '@dcl/ecs'
+import { Color4 } from '@dcl/sdk/math'
+import { convertTexture } from './commons/utils'
 
 // kernel:scene: [SDK7 Scene Template]    Hello from Material {"componentName":"engine.texture","classId":68,"disposed":false,"json":"{\"src\":\"images/scene-thumbnail.png\"}"}
 
-function convertWrapMode(ecs6WrapMode: number | undefined): TextureWrapMode | undefined {
-  if (ecs6WrapMode) {
-    switch (ecs6WrapMode) {
-      case 0:
-        return TextureWrapMode.TWM_CLAMP
-      case 1:
-        return TextureWrapMode.TWM_REPEAT
-      case 2:
-        return TextureWrapMode.TWM_MIRROR
-    }
-  }
-  return undefined
-}
+// function convertWrapMode(
+//   ecs6WrapMode: number | undefined
+// ): TextureWrapMode | undefined {
+//   if (ecs6WrapMode) {
+//     switch (ecs6WrapMode) {
+//       case 0:
+//         return TextureWrapMode.TWM_CLAMP
+//       case 1:
+//         return TextureWrapMode.TWM_REPEAT
+//       case 2:
+//         return TextureWrapMode.TWM_MIRROR
+//     }
+//   }
+//   return undefined
+// }
 
-function convertTexture(state: AdaptationLayerState, textureEntityId: any): TextureUnion | undefined {
-  if (textureEntityId) {
-    const textureData = state.ecs7.components[textureEntityId]
-    const texturePayload = textureData.data
-    switch (textureData.classId) {
-      case ECS6_CLASS_ID.TEXTURE:
-        return Material.Texture.Common({
-            src: texturePayload.src,
-            filterMode: texturePayload.samplingMode,
-            wrapMode: convertWrapMode(texturePayload.wrap)
-          })
-      case ECS6_CLASS_ID.AVATAR_TEXTURE:
-        return Material.Texture.Avatar({
-              userId: texturePayload.userId,
-              filterMode: texturePayload.samplingMode,
-              wrapMode: convertWrapMode(texturePayload.wrap)
-            })
-      // TODO: Implement VideoTexture
-    }
-  }
-  return undefined
-}
-
-export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payload: any) {
+function update(
+  state: AdaptationLayerState,
+  ecs6EntityId: EntityID,
+  payload: ECS6ComponentMaterial
+): void {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
   Material.setPbrMaterial(ecs7Entity, {
     texture: convertTexture(state, payload.albedoTexture),
@@ -51,22 +37,27 @@ export function update(state: AdaptationLayerState, ecs6EntityId: EntityID, payl
     alphaTexture: convertTexture(state, payload.alphaTexture),
     emissiveTexture: convertTexture(state, payload.emissiveTexture),
     bumpTexture: convertTexture(state, payload.bumpTexture),
-    albedoColor: payload.albedoColor,
+    albedoColor: { ...Color4.White(), ...payload.albedoColor },
     emissiveColor: payload.emissiveColor,
     reflectivityColor: payload.reflectivityColor,
     transparencyMode: payload.transparencyMode,
     metallic: payload.metallic,
     roughness: payload.roughness,
-    //glossiness: payload.microSurface, // @deprecated https://github.com/decentraland/protocol/pull/155
+    // glossiness: payload.microSurface, // @deprecated https://github.com/decentraland/protocol/pull/155
     specularIntensity: payload.specularIntensity,
     emissiveIntensity: payload.emissiveIntensity,
     directIntensity: payload.directIntensity
   })
 }
 
-export function remove(state: AdaptationLayerState, ecs6EntityId: EntityID) {
+function remove(state: AdaptationLayerState, ecs6EntityId: EntityID): void {
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
-  if (Material.getOrNull(ecs7Entity)) {
+  if (Material.getOrNull(ecs7Entity) !== null) {
     Material.deleteFrom(ecs7Entity)
   }
+}
+
+export const Ecs6MaterialConvertion: ComponentAdaptation = {
+  update,
+  remove
 }

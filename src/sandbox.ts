@@ -33,8 +33,11 @@ const allowListES5: Array<keyof typeof globalThis> = [
 ]
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-const defer: (fn: Function) => void = (Promise.resolve().then as any).bind(Promise.resolve() as any)
+const defer: (fn: Function) => void = (Promise.resolve().then as any).bind(
+  Promise.resolve() as any
+)
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export async function customEval(code: string, context: any) {
   const sandbox: any = {}
 
@@ -48,9 +51,13 @@ export async function customEval(code: string, context: any) {
   sandbox.window = sandbox
   sandbox.self = sandbox
 
-  return defer(() => new Function('code', `with (this) { ${code} }`).call(sandbox, code))
+  defer(() =>
+    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
+    new Function('code', `with (this) { ${code} }`).call(sandbox, code)
+  )
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function getES5Context(base: Record<string, any>) {
   // globalThis shouldn't crash here, as allowListES5 is an array of `keyof typeof globalThis`
   allowListES5.forEach(($) => (base[$] = (globalThis as any)[$]))
