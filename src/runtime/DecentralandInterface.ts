@@ -144,6 +144,7 @@ async function callRpc(
   methodName: string,
   args: any[]
 ): Promise<any> {
+  console.log('callRpc', rpcHandle, methodName, args)
   const module = state.loadedModules[rpcHandle]
   if (module !== undefined) {
     const implementation = module.implementation

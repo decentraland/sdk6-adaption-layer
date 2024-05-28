@@ -65,7 +65,7 @@ export function ecs7UpdateComponent(
   if (updateFn !== undefined) {
     updateFn(state, ecs6EntityId, payload)
   } else {
-    console.log('missing update fn', ecs6ClassId, payload)
+    // console.log('missing update fn', ecs6ClassId, payload)
   }
 }
 
@@ -79,6 +79,6 @@ export function ecs7UpdateComponentWithoutEntityId(
   if (updateFn !== undefined) {
     updateFn(state, componentId, payload)
   } else {
-    console.log('missing update fn without entityId', ecs6ClassId, payload)
+    // console.log('missing update fn without entityId', ecs6ClassId, payload)
   }
 }
