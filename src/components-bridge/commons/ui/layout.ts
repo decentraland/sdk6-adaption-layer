@@ -58,7 +58,6 @@ export function computeTransform(
       position: { left: computedPosition.x, top: computedPosition.y },
       width: size.x >= 0 ? size.x : 0,
       height: size.y >= 0 ? size.y : 0,
-      // TODO: opacity
       opacity: uiShape.opacity ?? 1.0
     },
     size

@@ -1,6 +1,8 @@
-export function loadWeb3Provider(sendAsyncMethod: (message: any) => any): any {
+import { sendAsync } from '~system/EthereumController'
+
+export function create(): Record<string, any> {
   const request = async (message: any): Promise<any> => {
-    const response = await sendAsyncMethod({
+    const response = await sendAsync({
       id: message.id,
       method: message.method,
       jsonParams: JSON.stringify(message.params)
