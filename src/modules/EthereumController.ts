@@ -22,7 +22,7 @@ export function create(): Record<string, any> {
     amount: number,
     currency: string
   ): Promise<any> {
-    throw new Error('TODO')
+    throw new Error('RequirePayment is not available, use sendAsync instead.')
   }
 
   /**
@@ -35,7 +35,7 @@ export function create(): Record<string, any> {
     hexEncodedMessage: string
     signature: string
   }> {
-    throw new Error('TODO')
+    throw new Error('signMessage is not available, use sendAsync instead.')
   }
 
   /**
@@ -45,7 +45,20 @@ export function create(): Record<string, any> {
    * @internal
    */
   async function convertMessageToObject(message: string): Promise<MessageDict> {
-    throw new Error('TODO')
+    let parsedMessage = message
+  
+    // Remove `# DCL Signed message` header
+    if (message.indexOf('# DCL Signed message') === 0) {
+      parsedMessage = message.slice(21)
+    }
+    // First, split the string parts into nested array
+    const arr = parsedMessage
+      .split('\n')
+      .map((m) => m.split(':'))
+      .map(([key, value]) => [key, value.trim()])
+  
+    // convert the array into object of type MessageDict
+    return arr.reduce((o, [key, value]) => ({ ...o, [key]: value }), {})
   }
 
   /**

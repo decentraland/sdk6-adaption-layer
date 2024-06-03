@@ -1,3 +1,5 @@
+import { exit, getPortableExperiencesLoaded, kill, spawn } from "~system/PortableExperiences"
+
 type PortableExperienceUrn = string
 type PortableExperienceHandle = {
   pid: PortableExperienceUrn
@@ -14,10 +16,14 @@ export function create(): Record<string, any> {
    *
    * Returns the handle of the portable experience.
    */
-  async function spawn(
+  async function internalSpawn(
     pid: PortableExperienceUrn
   ): Promise<PortableExperienceHandle> {
-    throw new Error('TODO')
+    const response = await spawn({ pid })
+    return {
+      pid: response.pid,
+      parentCid: response.parentCid
+    }
   }
 
   /**
@@ -26,8 +32,9 @@ export function create(): Record<string, any> {
    *
    * Returns true if was able to kill the portable experience, false if not.
    */
-  async function kill(pid: PortableExperienceUrn): Promise<boolean> {
-    throw new Error('TODO')
+  async function internalKill(pid: PortableExperienceUrn): Promise<boolean> {
+    const response = await kill({ pid})
+    return response.status
   }
 
   /**
@@ -35,22 +42,26 @@ export function create(): Record<string, any> {
    *
    * Returns true if was able to kill the portable experience, false if not.
    */
-  async function exit(): Promise<boolean> {
-    throw new Error('TODO')
+  async function internalExit(): Promise<boolean> {
+    const response = await exit({})
+    return response.status
   }
 
   /**
    *
    * Returns current portable experiences loaded with ids and parentCid
    */
-  async function getPortableExperiencesLoaded(): Promise<PortableExperienceLoaded> {
-    throw new Error('TODO')
+  async function internalGetPortableExperiencesLoaded(): Promise<PortableExperienceLoaded> {
+    const response = await getPortableExperiencesLoaded({})
+    return {
+      portableExperiences: response.loaded
+    }
   }
 
   return {
-    spawn,
-    kill,
-    exit,
-    getPortableExperiencesLoaded
+    spawn: internalSpawn,
+    kill: internalKill,
+    exit: internalExit,
+    getPortableExperiencesLoaded: internalGetPortableExperiencesLoaded
   }
 }

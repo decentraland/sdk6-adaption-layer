@@ -1,11 +1,11 @@
 import { TextDecoder } from 'text-encoding'
 import { readFile } from '~system/Runtime'
-import { createAdaptionLayer } from './runtime/DecentralandInterface'
+import { createAdaptionLayer, state } from './runtime/DecentralandInterface'
 import { customEval } from './sandbox'
 
 import * as sdk from '@dcl/sdk'
-import { Material, MeshRenderer, engine } from '@dcl/sdk/ecs'
-import { Color4 } from '@dcl/sdk/math'
+import { engine } from '@dcl/sdk/ecs'
+import { pollEvents } from './events/observables'
 
 async function getSceneJsonData(fileName: string): Promise<any> {
   const res = await readFile({ fileName })
@@ -44,7 +44,9 @@ const engineOnUpdate = sdkRef.onUpdate
 const engineOnStart = sdkRef.onStart
 
 export async function onUpdate(dt: number): Promise<void> {
-  await engineOnUpdate(dt)
+  engine.seal()
+  await engine.update(dt)
+  await pollEvents(state)
 }
 
 export async function onStart(): Promise<void> {
@@ -61,8 +63,4 @@ export async function onStart(): Promise<void> {
   await engineOnUpdate(0.0)
   adaptionLayer.forceUpdate(0.0)
   adaptionLayer.flushEvents()
-
-  const mesh = engine.addEntity()
-  MeshRenderer.setBox(mesh)
-  Material.setPbrMaterial(mesh, { albedoColor: Color4.Red() })
 }

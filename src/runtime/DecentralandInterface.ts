@@ -18,6 +18,7 @@ import { type AdaptationLayerState } from './../types'
 import { engine } from '@dcl/ecs'
 import { ReactEcsRenderer } from '@dcl/react-ecs'
 import { renderEcs6Ui } from '../components-bridge/commons/ui/core'
+import { CameraType } from '@dcl/sdk/ecs'
 
 type AdaptionLayerType = {
   decentralandInterface: DecentralandInterface
@@ -25,7 +26,8 @@ type AdaptionLayerType = {
   flushEvents: () => void
 }
 
-const state: AdaptationLayerState = {
+// only import if it's absolutely necessary
+export const state: AdaptationLayerState = {
   onUpdateFunctions: [],
   onStartFunctions: [],
   onEventFunctions: [],
@@ -43,7 +45,13 @@ const state: AdaptationLayerState = {
 
   loadedModules: {},
 
-  developerMode: false
+  developerMode: false,
+  eventState: {
+    lastRotationChanged: null,
+    lastPositionChanged: null,
+    lastCameraMode: CameraType.CT_FIRST_PERSON,
+    lastIsPointerLock: false
+  }
 }
 
 // ECS6 core

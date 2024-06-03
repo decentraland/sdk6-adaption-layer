@@ -1,4 +1,6 @@
 import { type Entity } from '@dcl/ecs'
+import { type CameraType } from '@dcl/sdk/ecs'
+
 export enum ECS6_CLASS_ID {
   TRANSFORM = 1,
   UUID_CALLBACK = 8,
@@ -78,6 +80,13 @@ export type AdaptationLayerState = {
   onStartFunctions: Array<() => void>
   onEventFunctions: Array<(event: any) => void>
   subscribedEvents: Set<string>
+
+  eventState: {
+    lastPositionChanged: IEvents['positionChanged'] | null
+    lastRotationChanged: IEvents['rotationChanged'] | null
+    lastCameraMode: CameraType | null
+    lastIsPointerLock: boolean | null
+  }
 
   ecs7: {
     entities: Record<string, Entity>
