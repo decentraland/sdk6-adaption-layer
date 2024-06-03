@@ -1,4 +1,9 @@
-import { exit, getPortableExperiencesLoaded, kill, spawn } from "~system/PortableExperiences"
+import {
+  exit,
+  getPortableExperiencesLoaded,
+  kill,
+  spawn
+} from '~system/PortableExperiences'
 
 type PortableExperienceUrn = string
 type PortableExperienceHandle = {
@@ -33,7 +38,7 @@ export function create(): Record<string, any> {
    * Returns true if was able to kill the portable experience, false if not.
    */
   async function internalKill(pid: PortableExperienceUrn): Promise<boolean> {
-    const response = await kill({ pid})
+    const response = await kill({ pid })
     return response.status
   }
 

@@ -46,7 +46,7 @@ export function create(): Record<string, any> {
    */
   async function convertMessageToObject(message: string): Promise<MessageDict> {
     let parsedMessage = message
-  
+
     // Remove `# DCL Signed message` header
     if (message.indexOf('# DCL Signed message') === 0) {
       parsedMessage = message.slice(21)
@@ -56,7 +56,7 @@ export function create(): Record<string, any> {
       .split('\n')
       .map((m) => m.split(':'))
       .map(([key, value]) => [key, value.trim()])
-  
+
     // convert the array into object of type MessageDict
     return arr.reduce((o, [key, value]) => ({ ...o, [key]: value }), {})
   }

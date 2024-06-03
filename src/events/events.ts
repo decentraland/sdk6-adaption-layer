@@ -1,6 +1,12 @@
 import { type AdaptationLayerState } from '../types'
 
-import { CameraMode, PointerLock, Transform, engine, inputSystem } from '@dcl/sdk/ecs'
+import {
+  CameraMode,
+  PointerLock,
+  Transform,
+  engine,
+  inputSystem
+} from '@dcl/sdk/ecs'
 import { Quaternion, type Vector3 } from '@dcl/sdk/math'
 
 import {
@@ -43,7 +49,12 @@ export function updateEventSystem(state: AdaptationLayerState): void {
     // TODO: should we add y-offset 0.8?
     const playerPosition = Transform.get(engine.PlayerEntity).position
     const cameraPosition = Transform.get(engine.CameraEntity).position
-    const needUpdate = state.eventState.lastPositionChanged === null || vector3CloseTo(playerPosition, state.eventState.lastPositionChanged.position)
+    const needUpdate =
+      state.eventState.lastPositionChanged === null ||
+      vector3CloseTo(
+        playerPosition,
+        state.eventState.lastPositionChanged.position
+      )
     if (needUpdate) {
       const data: IEvents['positionChanged'] = {
         position: playerPosition,
@@ -63,7 +74,13 @@ export function updateEventSystem(state: AdaptationLayerState): void {
   if (state.subscribedEvents.has('rotationChanged')) {
     const rotation = Transform.get(engine.CameraEntity).rotation
 
-    if (state.eventState.lastRotationChanged === null || !quaterniongCloseTo(rotation, state.eventState.lastRotationChanged.quaternion)) {
+    if (
+      state.eventState.lastRotationChanged === null ||
+      !quaterniongCloseTo(
+        rotation,
+        state.eventState.lastRotationChanged.quaternion
+      )
+    ) {
       const data = {
         quaternion: rotation,
         rotation: Quaternion.toEulerAngles(rotation)
@@ -98,7 +115,6 @@ export function updateEventSystem(state: AdaptationLayerState): void {
     }
   }
 
-  
   if (state.subscribedEvents.has('cameraModeChanged')) {
     const currentMode = CameraMode.get(engine.CameraEntity).mode
     if (state.eventState.lastCameraMode !== currentMode) {
