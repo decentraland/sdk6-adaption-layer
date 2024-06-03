@@ -2,12 +2,13 @@ import { type AdaptationLayerState } from '../types'
 
 import {
   CameraMode,
+  CameraType,
   PointerLock,
   Transform,
   engine,
   inputSystem
 } from '@dcl/sdk/ecs'
-import { Quaternion, type Vector3 } from '@dcl/sdk/math'
+import { Quaternion, Vector3 } from '@dcl/sdk/math'
 
 import {
   PointerEventStateComponent,
@@ -47,8 +48,10 @@ function quaterniongCloseTo(a: Quaternion, b: Quaternion): boolean {
 export function updateEventSystem(state: AdaptationLayerState): void {
   if (state.subscribedEvents.has('positionChanged')) {
     // TODO: should we add y-offset 0.8?
-    const playerPosition = Transform.get(engine.PlayerEntity).position
-    const cameraPosition = Transform.get(engine.CameraEntity).position
+    const playerPosition: Vector3.ReadonlyVector3 =
+      Transform.getOrNull(engine.PlayerEntity)?.position ?? Vector3.Zero()
+    const cameraPosition: Vector3.ReadonlyVector3 =
+      Transform.getOrNull(engine.CameraEntity)?.position ?? Vector3.Zero()
     const needUpdate =
       state.eventState.lastPositionChanged === null ||
       vector3CloseTo(
@@ -72,7 +75,9 @@ export function updateEventSystem(state: AdaptationLayerState): void {
   }
 
   if (state.subscribedEvents.has('rotationChanged')) {
-    const rotation = Transform.get(engine.CameraEntity).rotation
+    const rotation =
+      Transform.getOrNull(engine.CameraEntity)?.rotation ??
+      Quaternion.Identity()
 
     if (
       state.eventState.lastRotationChanged === null ||
@@ -116,7 +121,9 @@ export function updateEventSystem(state: AdaptationLayerState): void {
   }
 
   if (state.subscribedEvents.has('cameraModeChanged')) {
-    const currentMode = CameraMode.get(engine.CameraEntity).mode
+    const currentMode =
+      CameraMode.getOrNull(engine.CameraEntity)?.mode ??
+      CameraType.CT_THIRD_PERSON
     if (state.eventState.lastCameraMode !== currentMode) {
       sendEventToSDK6(state.onEventFunctions, {
         type: 'cameraModeChanged',
@@ -129,7 +136,8 @@ export function updateEventSystem(state: AdaptationLayerState): void {
   }
 
   if (state.subscribedEvents.has('cameraModeChanged')) {
-    const isPointerLocked = PointerLock.get(engine.CameraEntity).isPointerLocked
+    const isPointerLocked =
+      PointerLock.getOrNull(engine.CameraEntity)?.isPointerLocked ?? false
     if (state.eventState.lastIsPointerLock !== isPointerLocked) {
       sendEventToSDK6(state.onEventFunctions, {
         type: 'cameraModeChanged',
