@@ -1,3 +1,6 @@
+import { XMLHttpRequest } from './runtime/polyfill/XMLHttpRequest'
+import * as utils from '@dcl-sdk/utils'
+
 const allowListES5: Array<keyof typeof globalThis> = [
   'eval',
   'parseInt',
@@ -47,6 +50,21 @@ export async function customEval(code: string, context: any) {
   Object.keys(context).forEach(function (key) {
     sandbox[key] = context[key]
   })
+
+  const thisGlobal: any = globalThis
+  if (thisGlobal.clearInterval !== undefined) {
+    sandbox.clearInterval = thisGlobal.clearInterval
+    sandbox.clearTimeout = thisGlobal.clearTimeout
+    sandbox.setInterval = thisGlobal.setInterval
+    sandbox.setTimeout = thisGlobal.setTimeout
+  } else {
+    sandbox.clearInterval = utils.timers.clearInterval
+    sandbox.clearTimeout = utils.timers.clearTimeout
+    sandbox.setInterval = utils.timers.setInterval
+    sandbox.setTimeout = utils.timers.setTimeout
+  }
+
+  sandbox.XMLHttpRequest = XMLHttpRequest
 
   sandbox.window = sandbox
   sandbox.self = sandbox

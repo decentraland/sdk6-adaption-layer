@@ -29,6 +29,7 @@ const LoadableModules: Record<string, () => Record<string, any>> = {
   '@decentraland/Players': Players.create,
   '@decentraland/PortableExperiences': PortableExperiences.create,
   '@decentraland/RestrictedActions': RestrictedActions.create,
+  '@decentraland/RestrictedActionModule': RestrictedActions.create,
   '@decentraland/SignedFetch': SignedFetch.create,
   '@decentraland/SocialController': SocialController.create,
   '@decentraland/web3-provider': web3Provider.create

@@ -24,11 +24,12 @@ const textureSizes = new Map<string, Vector2 | null>()
 export function Ecs6UiComponent(
   state: AdaptationLayerState,
   c: ComponentNode,
-  parentSize: Vector2
+  parentSize: Vector2,
+  zoom: number
 ): JSX.Element {
   switch (c.classId) {
     case ECS6_CLASS_ID.UI_CONTAINER_RECT: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize)
+      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
       const container = c.value as ECS6ComponentUiContainerRect
       const color = Color4.create(
         container.color?.r ?? 1.0,
@@ -46,13 +47,13 @@ export function Ecs6UiComponent(
           uiTransform={uiTransform}
           uiBackground={{ color }}
         >
-          {c.children.map(($) => Ecs6UiComponent(state, $, size))}
+          {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}
         </UiEntity>
       )
     }
 
     case ECS6_CLASS_ID.UI_IMAGE_SHAPE: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize)
+      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
       const imageValue = c.value as ECS6ComponentUiImage
       const texture = convertTexture(state, imageValue.source ?? '')
 
@@ -129,13 +130,13 @@ export function Ecs6UiComponent(
           onMouseDown={onMouseDown}
           onMouseUp={onMouseUp}
         >
-          {c.children.map(($) => Ecs6UiComponent(state, $, size))}
+          {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}
         </UiEntity>
       )
     }
 
     case ECS6_CLASS_ID.UI_TEXT_SHAPE: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize, false)
+      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
       const textValue = c.value as ECS6ComponentUiText
 
       if (textValue.textWrapping === true) {
@@ -158,7 +159,7 @@ export function Ecs6UiComponent(
               textValue.hTextAlign,
               textValue.vTextAlign
             ),
-            fontSize: textValue.fontSize ?? 10,
+            fontSize: (textValue.fontSize ?? 10) * zoom,
             font: convertUiFontFromFont(convertFont(state, textValue.font)),
             value: textValue.value ?? '',
             color: Color4.create(
@@ -177,28 +178,28 @@ export function Ecs6UiComponent(
             textWrapping: textValue.textWrapping ?? false
           }}
         >
-          {c.children.map(($) => Ecs6UiComponent(state, $, size))}
+          {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}
         </UiEntity>
       )
     }
 
     // TODO
     case ECS6_CLASS_ID.UI_INPUT_TEXT_SHAPE: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize)
+      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
       // const inputValue = c.value as ECS6ComponentUiInputText
 
       return (
         <UiEntity key={'w' + c.__id} uiTransform={uiTransform}>
-          {c.children.map(($) => Ecs6UiComponent(state, $, size))}
+          {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}
         </UiEntity>
       )
     }
 
     case ECS6_CLASS_ID.UI_SCREEN_SPACE_SHAPE: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize)
+      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
       return (
         <UiEntity key={'w' + c.__id} uiTransform={uiTransform}>
-          {c.children.map(($) => Ecs6UiComponent(state, $, size))}
+          {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}
         </UiEntity>
       )
     }
@@ -211,10 +212,10 @@ export function Ecs6UiComponent(
     // uiFullScreenShape
 
     default: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize)
+      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
       return (
         <UiEntity key={'w' + c.__id} uiTransform={uiTransform}>
-          {c.children.map(($) => Ecs6UiComponent(state, $, size))}
+          {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}
         </UiEntity>
       )
     }

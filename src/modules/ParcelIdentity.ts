@@ -23,7 +23,7 @@ type ILand = {
   mappingsResponse: MappingsResponse
 }
 
-type SceneJsonData = {
+export type SceneJsonData = {
   display?: SceneDisplay
   owner?: string
   contact?: SceneContact

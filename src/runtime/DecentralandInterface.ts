@@ -156,8 +156,14 @@ async function callRpc(
   const module = state.loadedModules[rpcHandle]
   if (module !== undefined) {
     const implementation = module.implementation
-    const res = await implementation[methodName](...args)
-    return res
+    if (implementation[methodName] !== undefined) {
+      const res = await implementation[methodName](...args)
+      return res
+    } else {
+      throw new Error(
+        `Method not found rpcHandle=${rpcHandle} methodName=${methodName}`
+      )
+    }
   }
   throw new Error(
     `Module not loaded rpcHandle=${rpcHandle} methodName=${methodName}`

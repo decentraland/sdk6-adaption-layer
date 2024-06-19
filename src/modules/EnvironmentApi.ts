@@ -1,4 +1,11 @@
-import { getExplorerInformation, getRealm, getWorldTime } from '~system/Runtime'
+import {
+  type ContentMapping,
+  getExplorerInformation,
+  getRealm,
+  getWorldTime,
+  getSceneInformation
+} from '~system/Runtime'
+import { type SceneJsonData } from './ParcelIdentity'
 
 type Realm = {
   domain: string
@@ -17,6 +24,16 @@ type ExplorerConfiguration = {
 const enum Platform {
   DESKTOP = 'desktop',
   BROWSER = 'browser'
+}
+
+type BootstrapData = {
+  sceneId: string
+  name: string
+  main: string
+  baseUrl: string
+  mappings: ContentMapping[]
+  useFPSThrottling: boolean
+  data: SceneJsonData
 }
 
 export function create(): Record<string, any> {
@@ -77,11 +94,31 @@ export function create(): Record<string, any> {
     return { seconds: time.seconds }
   }
 
+  async function getBootstrapData(): Promise<BootstrapData> {
+    const sceneInformation = await getSceneInformation({})
+    const sceneJsonData = JSON.parse(sceneInformation.metadataJson ?? '{}')
+    return {
+      sceneId: sceneInformation.urn ?? '',
+      name: sceneJsonData.name ?? '',
+      main: sceneJsonData.main ?? '',
+      baseUrl: sceneInformation.baseUrl,
+      mappings: sceneInformation.content,
+      useFPSThrottling: true,
+      data: sceneJsonData
+    }
+  }
+
+  async function areUnsafeRequestAllowed(): Promise<boolean> {
+    return true
+  }
+
   return {
     getCurrentRealm,
     isPreviewMode,
     getExplorerConfiguration,
     getPlatform,
-    getDecentralandTime
+    getDecentralandTime,
+    getBootstrapData,
+    areUnsafeRequestAllowed
   }
 }

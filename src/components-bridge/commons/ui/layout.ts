@@ -9,22 +9,24 @@ import {
 export function computeTransform(
   uiShape: ECS6ComponentUiShape,
   parentSize: Vector2,
-  ignoreSize: boolean = false
+  zoom: number
 ): [UiTransformProps, Vector2] {
   const size = computedVector2FromUiValue(
     uiShape.width,
     uiShape.height,
-    parentSize
+    parentSize,
+    { x: 100, y: 50 }
   )
   const offsetPosition = computedVector2FromUiValue(
     uiShape.positionX,
     uiShape.positionY,
-    parentSize
+    parentSize,
+    { x: 0, y: 0 }
   )
   const position = computedVector2FromAlign(
     uiShape.hAlign,
     uiShape.vAlign,
-    ignoreSize ? { x: 0, y: 0 } : size,
+    size,
     parentSize
   )
   const computedPosition = {
@@ -55,41 +57,43 @@ export function computeTransform(
     {
       display: uiShape.visible === false ? 'none' : 'flex',
       positionType: 'absolute',
-      position: { left: computedPosition.x, top: computedPosition.y },
-      width: size.x >= 0 ? size.x : 0,
-      height: size.y >= 0 ? size.y : 0,
+      position: {
+        left: computedPosition.x * zoom,
+        top: computedPosition.y * zoom
+      },
+      width: (size.x >= 0 ? size.x : 0) * zoom,
+      height: (size.y >= 0 ? size.y : 0) * zoom,
       opacity: uiShape.opacity ?? 1.0
     },
     size
   ]
 }
 
-export function computedVector2FromUiValue(
+function computedVector2FromUiValue(
   width: UiValue | undefined,
   height: UiValue | undefined,
-  parentSize: Vector2
+  parentSize: Vector2,
+  initialValue: Vector2
 ): Vector2 {
-  const retVec = { x: 100, y: 50 } satisfies Vector2
-
   if (width?.value !== undefined && width?.type !== undefined) {
     if (width?.type === 0) {
-      retVec.x = parentSize.x * (width.value / 100.0)
+      initialValue.x = parentSize.x * (width.value / 100.0)
     } else {
-      retVec.x = width.value
+      initialValue.x = width.value
     }
   }
 
   if (height?.value !== undefined && height?.type !== undefined) {
     if (height?.type === 0) {
-      retVec.y = parentSize.y * (height.value / 100.0)
+      initialValue.y = parentSize.y * (height.value / 100.0)
     } else {
-      retVec.y = height.value
+      initialValue.y = height.value
     }
   }
-  return retVec
+  return initialValue
 }
 
-export function computedVector2FromAlign(
+function computedVector2FromAlign(
   hAlign: string | undefined,
   vAlign: string | undefined,
   selfSize: Vector2,
