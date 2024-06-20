@@ -3,3 +3,6 @@ declare module '~system/AdaptationLayerHelper' {
     src: string
   }): Promise<{ src: string; size: { width: number; height: number } }>
 }
+
+declare type FormData = any
+declare type Blob = any

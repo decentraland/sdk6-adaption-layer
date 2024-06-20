@@ -1,5 +1,7 @@
 import { XMLHttpRequest } from './runtime/polyfill/XMLHttpRequest'
 import * as utils from '@dcl-sdk/utils'
+import { TextEncoder, TextDecoder } from 'text-encoding'
+import { FormData } from 'formdata-polyfill/esm.min'
 
 const allowListES5: Array<keyof typeof globalThis> = [
   'eval',
@@ -65,6 +67,9 @@ export async function customEval(code: string, context: any) {
   }
 
   sandbox.XMLHttpRequest = XMLHttpRequest
+  sandbox.TextEncoder = TextEncoder
+  sandbox.TextDecoder = TextDecoder
+  sandbox.FormData = FormData
 
   sandbox.window = sandbox
   sandbox.self = sandbox

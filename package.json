@@ -41,6 +41,7 @@
     "@dcl/posix": "^1.0.4",
     "@types/buffers": "^0.1.31",
     "@types/text-encoding": "^0.0.36",
+    "formdata-polyfill": "^4.0.10",
     "text-encoding": "^0.7.0",
     "whatwg-url-without-unicode": "^8.0.0-3"
   }
