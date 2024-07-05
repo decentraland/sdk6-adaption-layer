@@ -150,6 +150,11 @@ export function Ecs6UiComponent(
       // textWrapping
       // shadowBlur shadowOffsetX, shadowOffsetY, shadowColor
 
+      const textWrap =
+        textValue.textWrapping === undefined || textValue.textWrapping
+          ? 'wrap'
+          : 'nowrap'
+
       return (
         <UiEntity
           key={'w' + c.__id}
@@ -175,7 +180,7 @@ export function Ecs6UiComponent(
               textValue.outlineColor?.a ?? 1.0
             ),
             outlineWidth: textValue.outlineWidth ?? 0,
-            textWrapping: textValue.textWrapping ?? false
+            textWrap
           }}
         >
           {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}
