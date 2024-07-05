@@ -7,16 +7,15 @@
     "deploy": "sdk-commands deploy",
     "build": "sdk-commands build --skip-install --customEntryPoint",
     "build:prod": "sdk-commands build --skip-install --production --customEntryPoint",
-    "upgrade-sdk": "npm install --save-dev @dcl/sdk@latest",
-    "upgrade-sdk:next": "npm install --save-dev @dcl/sdk@next",
+    "upgrade-sdk": "npm i @dcl/sdk@protocol-squad @dcl/sdk-commands@protocol-squad @dcl/js-runtime@protocol-squad --save-exact",
     "lint": "eslint src/**/*.{ts,tsx}",
     "lint:fix": "eslint --fix src/**/*.{ts,tsx}",
     "format": "prettier --config .prettierrc -c src/**/*.{ts,tsx}",
     "format:fix": "prettier -w --config .prettierrc -c src/**/*.{ts,tsx}"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "7.5.1-9259817556.commit-b9f9e94",
-    "@dcl/sdk": "7.5.1-9259817556.commit-b9f9e94",
+    "@dcl/js-runtime": "7.5.6-9724511758.commit-cb2baa8",
+    "@dcl/sdk": "7.5.6-9724511758.commit-cb2baa8",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "eslint": "^8.53.0",
@@ -39,6 +38,7 @@
   "dependencies": {
     "@dcl-sdk/utils": "^1.1.2",
     "@dcl/posix": "^1.0.4",
+    "@dcl/sdk-commands": "7.5.6-9724511758.commit-cb2baa8",
     "@types/buffers": "^0.1.31",
     "@types/text-encoding": "^0.0.36",
     "formdata-polyfill": "^4.0.10",
