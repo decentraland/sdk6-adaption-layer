@@ -142,8 +142,15 @@ function log(...args: any[]): void {
 
 // RPC
 async function loadModule(moduleName: string): Promise<any> {
-  const wrappedModule = await loadWrappedModule(moduleName)
-  state.loadedModules[wrappedModule.rpcHandle] = wrappedModule
+  console.log('loadingModule', moduleName)
+  if (state.loadedModules[moduleName] !== undefined) {
+    return state.loadedModules[moduleName]
+  }
+
+  const wrappedModule = loadWrappedModule(moduleName)
+  wrappedModule.rpcHandle = moduleName
+  state.loadedModules[moduleName] = wrappedModule
+
   return wrappedModule
 }
 
