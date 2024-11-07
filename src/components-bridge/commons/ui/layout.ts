@@ -5,16 +5,18 @@ import {
   type UiValue,
   type Vector2
 } from '~system/EngineApi'
+import { type StackContext } from './UiComponent'
 
 export function computeTransform(
   uiShape: ECS6ComponentUiShape,
   parentSize: Vector2,
-  zoom: number
+  zoom: number,
+  stack?: StackContext
 ): [UiTransformProps, Vector2] {
   const size = computedVector2FromUiValue(
     uiShape.width,
     uiShape.height,
-    parentSize,
+    stack !== undefined ? { x: 100, y: 50 } : parentSize,
     { x: 100, y: 50 }
   )
   const offsetPosition = computedVector2FromUiValue(
@@ -23,12 +25,16 @@ export function computeTransform(
     parentSize,
     { x: 0, y: 0 }
   )
-  const position = computedVector2FromAlign(
-    uiShape.hAlign,
-    uiShape.vAlign,
-    size,
-    parentSize
-  )
+  const position =
+    stack !== undefined
+      ? stack.offset
+      : computedVector2FromAlign(
+          uiShape.hAlign,
+          uiShape.vAlign,
+          size,
+          parentSize
+        )
+
   const computedPosition = {
     x: position.x + offsetPosition.x,
     y: position.y - offsetPosition.y

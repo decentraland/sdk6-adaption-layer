@@ -10,10 +10,7 @@ export function sdk7ExistsEntity(
   state: AdaptationLayerState,
   ecs6EntityId: EntityID
 ): boolean {
-  if (state.ecs7.entities[ecs6EntityId] === undefined) {
-    return false
-  }
-  return true
+  return state.ecs7.entities[ecs6EntityId] !== undefined
 }
 
 export function sdk7EnsureEntity(

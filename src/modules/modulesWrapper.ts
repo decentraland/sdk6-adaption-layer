@@ -1,3 +1,4 @@
+import { DEBUG_CONFIG } from '../debug/config'
 import * as CommunicationsController from './CommunicationsController'
 import * as EnvironmentAPI from './EnvironmentApi'
 import * as EthereumController from './EthereumController'
@@ -21,25 +22,30 @@ function getModuleMethods(module: any): MethodDescriptor[] {
 }
 
 const LoadableModules: Record<string, () => Record<string, any>> = {
-  '@decentraland/CommunicationsController': CommunicationsController.create,
-  '@decentraland/EnvironmentAPI': EnvironmentAPI.create,
-  '@decentraland/EthereumController': EthereumController.create,
-  '@decentraland/Identity': Identity.create,
-  '@decentraland/ParcelIdentity': ParcelIdentity.create,
-  '@decentraland/Players': Players.create,
-  '@decentraland/PortableExperiences': PortableExperiences.create,
-  '@decentraland/RestrictedActions': RestrictedActions.create,
-  '@decentraland/RestrictedActionModule': RestrictedActions.create,
-  '@decentraland/SignedFetch': SignedFetch.create,
-  '@decentraland/SocialController': SocialController.create,
-  '@decentraland/web3-provider': web3Provider.create
+  CommunicationsController: CommunicationsController.create,
+  EnvironmentAPI: EnvironmentAPI.create,
+  EthereumController: EthereumController.create,
+  Identity: Identity.create,
+  ParcelIdentity: ParcelIdentity.create,
+  Players: Players.create,
+  PortableExperiences: PortableExperiences.create,
+  RestrictedActions: RestrictedActions.create,
+  RestrictedActionModule: RestrictedActions.create,
+  SignedFetch: SignedFetch.create,
+  SocialController: SocialController.create,
+  'web3-provider': web3Provider.create
 }
 
 export function loadWrappedModule(
-  moduleName: string
+  maybeModuleName: string
 ): ModuleDescriptorWithImplementation {
+  const onlyNameModule = maybeModuleName.replace(/^@decentraland\//, '')
+  const moduleName =
+    maybeModuleName in LoadableModules ? maybeModuleName : onlyNameModule
+
   if (moduleName in LoadableModules) {
-    console.log(`Loading module ${moduleName}`)
+    if (DEBUG_CONFIG.RPC_MODULE) console.log(`Loading module ${moduleName}`)
+
     const module = LoadableModules[moduleName]()
     return {
       methods: getModuleMethods(module),

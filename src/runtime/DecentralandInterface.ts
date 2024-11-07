@@ -19,9 +19,15 @@ import { engine } from '@dcl/ecs'
 import { ReactEcsRenderer } from '@dcl/react-ecs'
 import { renderEcs6Ui } from '../components-bridge/commons/ui/core'
 import { CameraType } from '@dcl/sdk/ecs'
+import { logMiddleware } from './LogMiddleware'
+import { openExternalUrl, openNftDialog } from '~system/RestrictedActions'
+import { DEBUG_CONFIG } from '../debug/config'
 
 type AdaptionLayerType = {
   decentralandInterface: DecentralandInterface
+
+  start: () => void
+
   forceUpdate: (dt: number) => void
   flushEvents: () => void
 }
@@ -51,7 +57,9 @@ export const state: AdaptationLayerState = {
     lastPositionChanged: null,
     lastCameraMode: CameraType.CT_FIRST_PERSON,
     lastIsPointerLock: false
-  }
+  },
+
+  disableUpdate: true
 }
 
 // ECS6 core
@@ -105,12 +113,18 @@ function updateEntityComponent(
 }
 
 // Actions
-function openExternalUrl(url: string): void {}
-function openNFTDialog(
+function sdk6OpenExternalUrl(url: string): void {
+  openExternalUrl({ url }).catch(console.error)
+}
+function sdk6OpenNftDialog(
   assetContractAddress: string,
   tokenId: string,
   comment: string | null
-): void {}
+): void {
+  openNftDialog({
+    urn: `urn:decentraland:ethereum:erc721:${assetContractAddress}:${tokenId}`
+  }).catch(console.error)
+}
 
 // Events
 function query(queryType: any, payload: any): void {}
@@ -142,9 +156,11 @@ function log(...args: any[]): void {
 
 // RPC
 async function loadModule(moduleName: string): Promise<any> {
-  console.log('loadingModule', moduleName)
-  if (state.loadedModules[moduleName] !== undefined) {
-    return state.loadedModules[moduleName]
+  if (DEBUG_CONFIG.RPC_MODULE) console.log('loadingModule', moduleName)
+
+  const maybeModule = state.loadedModules[moduleName]
+  if (maybeModule !== undefined) {
+    return maybeModule
   }
 
   const wrappedModule = loadWrappedModule(moduleName)
@@ -159,7 +175,9 @@ async function callRpc(
   methodName: string,
   args: any[]
 ): Promise<any> {
-  console.log('callRpc', rpcHandle, methodName, args)
+  if (DEBUG_CONFIG.RPC_MODULE)
+    console.log('callRpc', rpcHandle, methodName, args)
+
   const module = state.loadedModules[rpcHandle]
   if (module !== undefined) {
     const implementation = module.implementation
@@ -185,13 +203,15 @@ function flushEvents(): void {
   // Print state each 100ms
   if (Date.now() - lastTick > 1000) {
     lastTick = Date.now()
-    if (state.developerMode) {
+    if (DEBUG_CONFIG.STATS_1_SECOND) {
       printState(state)
     }
   }
 }
 
 function onLegacyUpdate(dt: number): void {
+  if (state.disableUpdate) return
+
   for (const cb of state.onUpdateFunctions) {
     try {
       cb(dt)
@@ -200,6 +220,20 @@ function onLegacyUpdate(dt: number): void {
     }
   }
   flushEvents()
+}
+
+function start(): void {
+  for (const cb of state.onStartFunctions) {
+    try {
+      cb()
+    } catch (err: any) {
+      error('Error onStart', err)
+    }
+  }
+
+  state.disableUpdate = false
+  if (DEBUG_CONFIG.STATS_1_SECOND)
+    console.log('Adaption Layer sent start signal')
 }
 
 export function createAdaptionLayer(developerMode: boolean): AdaptionLayerType {
@@ -223,8 +257,8 @@ export function createAdaptionLayer(developerMode: boolean): AdaptionLayerType {
     componentDisposed,
     componentUpdated,
     log,
-    openExternalUrl,
-    openNFTDialog,
+    openExternalUrl: sdk6OpenExternalUrl,
+    openNFTDialog: sdk6OpenNftDialog,
     onUpdate,
     onEvent,
     loadModule,
@@ -234,9 +268,11 @@ export function createAdaptionLayer(developerMode: boolean): AdaptionLayerType {
   }
 
   return {
-    // decentralandInterface: logMiddleware(decentralandInterface),
-    decentralandInterface,
+    decentralandInterface: DEBUG_CONFIG.LOG_MIDDLEWARE
+      ? logMiddleware(decentralandInterface)
+      : decentralandInterface,
     forceUpdate: onLegacyUpdate,
-    flushEvents
+    flushEvents,
+    start
   }
 }

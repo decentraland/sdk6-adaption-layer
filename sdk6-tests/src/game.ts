@@ -185,6 +185,25 @@ function createContainer(x: number, y: number, hAlign: string, vAlign: string, w
     return container
 }
 
+function createContainerStack(x: number, y: number, hAlign: string, vAlign: string, width: string, height: string, color: Color4, parent: UIShape, adaptWidth: boolean, adaptHeight: boolean, stackOrientation: UIStackOrientation, spacing: number) {
+  const container = new UIContainerStack(parent)
+  container.color = color
+  container.positionX = x
+  container.positionY = y
+  container.hAlign = hAlign
+  container.vAlign = vAlign
+  container.width = width
+  container.height = height
+  container.isPointerBlocker = false
+  container.adaptHeight = adaptHeight
+  container.adaptWidth = adaptWidth
+  container.stackOrientation = stackOrientation
+  container.spacing = spacing
+
+  return container
+}
+
+
 function createText(parent: UIShape, value: string, hTextAlign: string, vTextAlign: string, hAlign: string, vAlign: string, width: string, height: string, color: Color4, opacity: number, textWrapping: boolean = false, isPointerBlocker: boolean = false) {
     const text = new UIText(parent)
     text.value = value
@@ -351,8 +370,23 @@ function testUiK() {
   textA.positionY = 160
 }
 
+function testUiL() {
+  // Create screenspace component
+  const canvas = new UICanvas()
+
+  const color = Color4.Blue()
+  color.a = 0.4
+
+  const superParent = createContainerStack(0, 0, 'center', 'center', '400px', '350px', color, canvas, true, true, UIStackOrientation.VERTICAL, 0)
+
+  const childA = createContainer(0, 0, 'center', 'center', '200px', '200px', Color4.Green(), superParent)
+  const childB = createContainer(0, 0, 'center', 'center', '50px', '50px', Color4.Blue(), superParent)
+  const childC = createContainer(0, 0, 'center', 'center', '200px', '50%', Color4.Red(), superParent)
+  const childD = createContainer(0, 0, 'center', 'center', '50%', '200px', Color4.Gray(), superParent)
+}
+
 // ui.displayAnnouncement('Hello world asd', 500)
-testUiK()
+testUiL()
 
 // const dialog = new npc.DialogWindow()
 // dialog.openDialogWindow([{
@@ -366,4 +400,37 @@ testUiK()
 // }
 // ])
 
+// // Instance the input object
+// const input = Input.instance
 
+
+// input.subscribe('BUTTON_DOWN', ActionButton.POINTER, false, (e) => {
+//   log('Button Down ', e)
+// })
+
+// // button up event
+// input.subscribe('BUTTON_UP', ActionButton.POINTER, false, (e) => {
+//   log('Button Up', e)
+// })
+
+// class ButtonChecker implements ISystem {
+//   state: boolean = false
+// 	update() {
+// 		if (this.state != Input.instance.isButtonPressed(ActionButton.FORWARD).BUTTON_DOWN) {
+//       this.state = !this.state
+
+//       if (this.state) {
+//         log('player walking forward')
+//       } else {
+//         log('player not walking forward')
+//       }
+//     }
+// 	}
+// }
+
+// engine.addSystem(new ButtonChecker())
+
+// dcl.onEvent(event => { 
+// log('sdk6 event', event)	
+// }
+// )

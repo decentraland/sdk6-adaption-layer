@@ -1,11 +1,12 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, {
-  type UiBackgroundProps,
   UiEntity,
-  type JSX
+  type JSX,
+  type UiBackgroundProps
 } from '@dcl/sdk/react-ecs'
 import {
   type ECS6ComponentUiContainerRect,
+  type ECS6ComponentUiContainerStack,
   type ECS6ComponentUiImage,
   type ECS6ComponentUiText,
   type Vector2
@@ -21,15 +22,25 @@ import { getClickHandler } from './events'
 
 const textureSizes = new Map<string, Vector2 | null>()
 
+export type StackContext = {
+  offset: Vector2
+}
+
 export function Ecs6UiComponent(
   state: AdaptationLayerState,
   c: ComponentNode,
   parentSize: Vector2,
-  zoom: number
+  zoom: number,
+  stack?: StackContext
 ): JSX.Element {
   switch (c.classId) {
     case ECS6_CLASS_ID.UI_CONTAINER_RECT: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
+      const [uiTransform, size] = computeTransform(
+        c.value,
+        parentSize,
+        zoom,
+        stack
+      )
       const container = c.value as ECS6ComponentUiContainerRect
       const color = Color4.create(
         container.color?.r ?? 1.0,
@@ -52,8 +63,87 @@ export function Ecs6UiComponent(
       )
     }
 
+    case ECS6_CLASS_ID.UI_CONTAINER_STACK: {
+      const [, size] = computeTransform(c.value, parentSize, zoom, stack)
+      const container = c.value as ECS6ComponentUiContainerStack
+
+      const color = Color4.create(
+        container.color?.r ?? 1.0,
+        container.color?.g ?? 1.0,
+        container.color?.b ?? 1.0,
+        container.color?.a ?? 1.0
+      )
+
+      const sizes = c.children.map((child) => {
+        return computeTransform(child.value, { x: 100, y: 50 }, zoom)
+      })
+
+      const totalSize: Vector2 = { x: 0, y: 0 }
+      const positions: number[] = Array.from({ length: c.children.length })
+      const spacing = container.spacing ?? 0
+      for (let i = 0; i < c.children.length; i++) {
+        if (container.stackOrientation === 0) {
+          positions[i] = totalSize.y
+        } else {
+          positions[i] = totalSize.x
+        }
+
+        if (container.stackOrientation === 0) {
+          totalSize.x = Math.max(sizes[i][1].x, totalSize.x)
+          totalSize.y += sizes[i][1].y + spacing
+        } else {
+          totalSize.x += sizes[i][1].x + spacing
+          totalSize.y = Math.max(sizes[i][1].y, totalSize.y)
+        }
+      }
+
+      if (container.adaptHeight === true) {
+        c.value.width = {
+          type: 1,
+          value: totalSize.x
+        }
+      }
+
+      if (container.adaptHeight === true) {
+        c.value.height = {
+          type: 1,
+          value: totalSize.y
+        }
+      }
+
+      const [realUiTransform] = computeTransform(
+        c.value,
+        parentSize,
+        zoom,
+        stack
+      )
+
+      const stackOrientation = container.stackOrientation ?? 0
+      return (
+        <UiEntity
+          key={'w' + c.__id}
+          uiTransform={realUiTransform}
+          uiBackground={{ color }}
+        >
+          {c.children.map(($, index) => {
+            return Ecs6UiComponent(state, $, size, zoom, {
+              offset: {
+                x: stackOrientation === 1 ? positions[index] : 0,
+                y: stackOrientation === 0 ? positions[index] : 0
+              }
+            })
+          })}
+        </UiEntity>
+      )
+    }
+
     case ECS6_CLASS_ID.UI_IMAGE_SHAPE: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
+      const [uiTransform, size] = computeTransform(
+        c.value,
+        parentSize,
+        zoom,
+        stack
+      )
       const imageValue = c.value as ECS6ComponentUiImage
       const texture = convertTexture(state, imageValue.source ?? '')
 
@@ -136,7 +226,12 @@ export function Ecs6UiComponent(
     }
 
     case ECS6_CLASS_ID.UI_TEXT_SHAPE: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
+      const [uiTransform, size] = computeTransform(
+        c.value,
+        parentSize,
+        zoom,
+        stack
+      )
       const textValue = c.value as ECS6ComponentUiText
 
       if (textValue.textWrapping === true) {
@@ -190,7 +285,12 @@ export function Ecs6UiComponent(
 
     // TODO
     case ECS6_CLASS_ID.UI_INPUT_TEXT_SHAPE: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
+      const [uiTransform, size] = computeTransform(
+        c.value,
+        parentSize,
+        zoom,
+        stack
+      )
       // const inputValue = c.value as ECS6ComponentUiInputText
 
       return (
@@ -201,7 +301,12 @@ export function Ecs6UiComponent(
     }
 
     case ECS6_CLASS_ID.UI_SCREEN_SPACE_SHAPE: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
+      const [uiTransform, size] = computeTransform(
+        c.value,
+        parentSize,
+        zoom,
+        stack
+      )
       return (
         <UiEntity key={'w' + c.__id} uiTransform={uiTransform}>
           {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}
@@ -217,7 +322,12 @@ export function Ecs6UiComponent(
     // uiFullScreenShape
 
     default: {
-      const [uiTransform, size] = computeTransform(c.value, parentSize, zoom)
+      const [uiTransform, size] = computeTransform(
+        c.value,
+        parentSize,
+        zoom,
+        stack
+      )
       return (
         <UiEntity key={'w' + c.__id} uiTransform={uiTransform}>
           {c.children.map(($) => Ecs6UiComponent(state, $, size, zoom))}

@@ -105,19 +105,17 @@ function update(
     })
   }
 
-  if (payload.hoverText !== undefined || payload.showFeedback !== undefined) {
-    const pointerEvent = PointerEvents.getOrCreateMutable(ecs7Entity)
+  const pointerEvent = PointerEvents.getOrCreateMutable(ecs7Entity)
 
-    pointerEvent.pointerEvents.push({
-      eventType: getPointerEventType(payload.type),
-      eventInfo: {
-        button: convertInputAction(payload.button),
-        hoverText: payload.hoverText,
-        maxDistance: payload.distance,
-        showFeedback: payload.showFeedback
-      }
-    })
-  }
+  pointerEvent.pointerEvents.push({
+    eventType: getPointerEventType(payload.type),
+    eventInfo: {
+      button: convertInputAction(payload.button),
+      hoverText: payload.hoverText,
+      maxDistance: payload.distance,
+      showFeedback: payload.showFeedback
+    }
+  })
 }
 
 function remove(state: AdaptationLayerState, ecs6EntityId: EntityID): void {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
 import {
-  type Ecs6ComponentData,
   type AdaptationLayerState,
+  type Ecs6ComponentData,
   type EventItem
 } from '../types'
 import {
@@ -39,6 +39,8 @@ function ecs7AttachEntityComponent(
       component.classId,
       component.data ?? {}
     )
+  } else {
+    console.log('Component classId is undefined ', id)
   }
 }
 
@@ -49,27 +51,38 @@ function ecs7RemoveEntityComponent(
 ): void {
   for (const [_id, component] of Object.entries(state.ecs7.components)) {
     if (
+      component !== undefined &&
       component.entityId === entityId &&
       component.componentName === componentName &&
       component.classId !== undefined
     ) {
       ecs7DeleteComponent(state, entityId, component.classId)
 
-      const sdk6ComponentId =
-        state.ecs6.entities[entityId].componentsName[componentName].id
-
       // clean
+
+      if (state.ecs6.entities[entityId] !== undefined) {
+        if (
+          state.ecs6.entities[entityId].componentsName[componentName] !==
+          undefined
+        ) {
+          const sdk6ComponentId =
+            state.ecs6.entities[entityId].componentsName[componentName].id
+          delete state.ecs6.componentsWithId[sdk6ComponentId]
+        }
+        delete state.ecs6.entities[entityId].componentsName[componentName]
+      }
       delete state.ecs7.components[_id]
-      delete state.ecs6.componentsWithId[sdk6ComponentId]
-      delete state.ecs6.entities[entityId].componentsName[componentName]
+
       return
     }
   }
 }
 
 function ecs7AddEntity(state: AdaptationLayerState, entityId: EntityID): void {
-  if (state.ecs7.entities[entityId] !== undefined) {
-    engine.removeEntity(state.ecs7.entities[entityId])
+  const entity = state.ecs7.entities[entityId]
+  if (entity !== undefined) {
+    console.log('Entity already exists', entityId)
+    engine.removeEntity(entity)
   }
   sdk7EnsureEntity(state, entityId)
 }
@@ -89,10 +102,11 @@ function ecs7RemoveEntity(
   state: AdaptationLayerState,
   entityId: EntityID
 ): void {
-  if (state.ecs7.entities[entityId] === undefined) {
+  const entity = state.ecs7.entities[entityId]
+  if (entity === undefined) {
     return
   }
-  engine.removeEntity(state.ecs7.entities[entityId])
+  engine.removeEntity(entity)
   delete state.ecs7.entities[entityId]
 }
 
@@ -109,8 +123,8 @@ function ecs7ComponentCreated(
 }
 
 function ecs7ComponentDisposed(state: AdaptationLayerState, id: string): void {
-  if (state.ecs7.components[id] !== undefined) {
-    const component = state.ecs7.components[id]
+  const component = state.ecs7.components[id]
+  if (component !== undefined) {
     if (component.entityId !== undefined && component.classId !== undefined) {
       ecs7DeleteComponent(state, component.entityId, component.classId)
     }

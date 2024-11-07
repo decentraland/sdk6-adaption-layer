@@ -1,63 +1,64 @@
+import { clearTimeout, setTimeout } from '../timers'
+
 type Callback = any
+
+type XMLHttpRequestResponseType =
+  | ''
+  | 'arraybuffer'
+  | 'blob'
+  | 'document'
+  | 'json'
+  | 'text'
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ProgressEvent {}
-
 export class XMLHttpRequest {
-  public withCredentials?: boolean = undefined
-
-  // request info
+  public withCredentials?: boolean
   public timeout: number = 0
+  public readyState: number = 0
+  public responseType: XMLHttpRequestResponseType = 'text'
+  public responseURL: string = ''
+
   private _events: Record<string, Callback> = {}
   private _headers: Record<string, string> = {}
   private _method: string = 'GET'
   private _url: string = ''
 
-  // response info
   public headers: Record<string, string> = {}
   public statusText: string = ''
   public status: number = 0
   public response: any
+  public responseText: string | null | undefined
   private allHeaders: string = ''
 
+  private updateReadyState(state: number): void {
+    this.readyState = state
+    this._events.readystatechange?.(new ProgressEvent())
+  }
+
+  // eslint-disable-next-line accessor-pairs
   set ontimeout(cb: Callback) {
     this._events.timeout = cb
   }
 
-  get ontimeout(): Callback {
-    return this._events.timeout
-  }
-
+  // eslint-disable-next-line accessor-pairs
   set onloadstart(cb: Callback) {
     this._events.loadstart = cb
   }
 
-  get onloadstart(): Callback {
-    return this._events.loadstart
-  }
-
+  // eslint-disable-next-line accessor-pairs
   set onloadend(cb: Callback) {
     this._events.loadend = cb
   }
 
-  get onloadend(): Callback {
-    return this._events.loadend
-  }
-
+  // eslint-disable-next-line accessor-pairs
   set onload(cb: Callback) {
     this._events.load = cb
   }
 
-  get onload(): Callback {
-    return this._events.load
-  }
-
+  // eslint-disable-next-line accessor-pairs
   set onerror(cb: Callback) {
     this._events.error = cb
-  }
-
-  get onerror(): Callback {
-    return this._events.error
   }
 
   addEventListener(event: string, callback: Callback): void {
@@ -75,39 +76,38 @@ export class XMLHttpRequest {
   open(method: string, url: string): void {
     this._method = method
     this._url = url
+    this.updateReadyState(1)
   }
 
   send(body?: string): void {
     // const controller = new AbortController();
-
     const options: RequestInit = {
       method: this._method,
       headers: this._headers,
       body
-      // signal: controller.signal,
+      // , signal: controller.signal };
     }
 
-    // TODO: this is not used
-    if (this.withCredentials === true) {
-      ;(options as any).credentials = 'include'
-    }
+    // if (this.withCredentials) { (options as any).credentials = 'include'; }
 
-    // dummy ProgressEvent
     const e = new ProgressEvent()
     this._events.loadstart?.(e)
 
-    // let timeoutId: number;
-    // if (this.timeout > 0) {
-    //   timeoutId = setTimeout(() => controller.abort(), this.timeout);
-    // }
+    let timeoutId: number | undefined
+    if (this.timeout > 0) {
+      timeoutId = setTimeout(() => {
+        // controller.abort();
+        this._events.timeout?.(e)
+      }, this.timeout)
+    }
 
     fetch(this._url, options)
       .then(async (response) => {
-        // clearTimeout(timeoutId);
-
-        // fill response headers
+        if (timeoutId !== undefined) clearTimeout(timeoutId)
+        this.responseURL = response.url
         this.allHeaders = ''
         this.headers = {}
+
         response.headers.forEach((value, key) => {
           this.headers[key] = value
           this.allHeaders += key + ': ' + value + '\r\n'
@@ -115,24 +115,30 @@ export class XMLHttpRequest {
 
         this.status = response.status
         this.statusText = response.statusText
-        this.response = await response.text()
 
-        // trigger events
+        if (this.responseType === 'json') {
+          this.response = await response.json()
+        } else if (this.responseType === 'blob') {
+          this.response = await (response as any).bytes()
+        } else if (this.responseType === 'arraybuffer') {
+          this.response = await (response as any).arrayBuffer()
+        } else {
+          this.response = await response.text()
+          this.responseText = this.response
+        }
+
+        this.updateReadyState(4)
         this._events.load?.(e)
         this._events.loadend?.(e)
       })
       .catch((reason) => {
-        // clearTimeout(timeoutId);
-        console.error(reason.message)
-
-        if (
-          reason.code !== undefined &&
-          (reason.code === 20 || reason.code === 23)
-        ) {
-          reason.type = 'timeout'
-        }
-
+        if (timeoutId !== undefined) clearTimeout(timeoutId)
         this._events.error?.(reason)
+        this._events.loadend?.(e)
       })
+  }
+
+  public abort(): void {
+    this._events.abort?.(new ProgressEvent())
   }
 }

@@ -14,8 +14,8 @@
     "format:fix": "prettier -w --config .prettierrc -c src/**/*.{ts,tsx}"
   },
   "devDependencies": {
-    "@dcl/js-runtime": "7.5.6-9724511758.commit-cb2baa8",
-    "@dcl/sdk": "7.5.6-9724511758.commit-cb2baa8",
+    "@dcl/js-runtime": "7.6.4-11515577295.commit-620b210",
+    "@dcl/sdk": "7.6.4-11515577295.commit-620b210",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "eslint": "^8.53.0",
@@ -38,7 +38,7 @@
   "dependencies": {
     "@dcl-sdk/utils": "^1.1.2",
     "@dcl/posix": "^1.0.4",
-    "@dcl/sdk-commands": "7.5.6-9724511758.commit-cb2baa8",
+    "@dcl/sdk-commands": "7.6.4-11515577295.commit-620b210",
     "@types/buffers": "^0.1.31",
     "@types/text-encoding": "^0.0.36",
     "formdata-polyfill": "^4.0.10",

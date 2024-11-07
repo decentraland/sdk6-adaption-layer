@@ -11,7 +11,7 @@ export function printState(state: AdaptationLayerState): void {
     onUpdateFunctions: ${state.onUpdateFunctions.length}
     onEventFunctions: ${state.onEventFunctions.length}
     onStartFunctions: ${state.onStartFunctions.length}
-    subscribedEvents: ${getObjectLength(state.subscribedEvents)}
+    subscribedEvents: ${state.subscribedEvents.size}
     `)
 }
 

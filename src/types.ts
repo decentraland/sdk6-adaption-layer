@@ -89,41 +89,45 @@ export type AdaptationLayerState = {
   }
 
   ecs7: {
-    entities: Record<string, Entity>
-    components: Record<string, Ecs6ComponentData>
+    entities: Record<string, Entity | undefined>
+    components: Record<string, Ecs6ComponentData | undefined>
   }
 
   ecs6: {
     entities: Record<
       string,
-      {
-        componentsName: Record<
-          string,
-          {
-            classId: number
-            id: string
-          }
-        >
-      }
+      | {
+          componentsName: Record<
+            string,
+            | {
+                classId: number
+                id: string
+              }
+            | undefined
+          >
+        }
+      | undefined
     >
 
     // Components with ID
     componentsWithId: Record<
       string,
-      {
-        componentName: string
-        classId: number
-        disposed: boolean
-        json: string
-      }
+      | {
+          componentName: string
+          classId: number
+          disposed: boolean
+          json: string
+        }
+      | undefined
     >
 
     events: EventItem[]
   }
 
-  loadedModules: Record<string, any>
+  loadedModules: Record<string, any | undefined>
 
   developerMode: boolean
+  disableUpdate: boolean
 }
 
 export type UpdateFunction = (

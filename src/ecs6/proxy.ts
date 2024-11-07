@@ -1,29 +1,6 @@
 import { adaptToEcs7 } from '../ecs7/adapter'
 import { type AdaptationLayerState } from '../types'
 
-function componentExists(state: AdaptationLayerState, id: string): boolean {
-  return state.ecs6.componentsWithId[id] !== undefined
-}
-
-function entityExists(state: AdaptationLayerState, entityId: string): boolean {
-  return state.ecs6.entities[entityId] !== undefined
-}
-
-// function componentNameExistsInEntity(
-//   state: AdaptationLayerState,
-//   entityId: string,
-//   componentName: string
-// ): boolean {
-//   if (!entityExists(state, entityId)) {
-//     return false
-//   }
-
-//   return (
-//     entityExists(state, entityId) &&
-//     state.ecs6.entities[entityId].componentsName[componentName] !== undefined
-//   )
-// }
-
 /**
  *
  * @param state
@@ -37,25 +14,7 @@ export function proxyAttachEntityComponent(
   componentName: string,
   id: string
 ): void {
-  if (componentExists(state, id)) {
-    state.ecs6.componentsWithId[id] = {
-      componentName,
-      classId: 0,
-      disposed: false,
-      json: '{}'
-    }
-  }
-
-  if (!entityExists(state, entityId)) {
-    state.ecs6.entities[entityId] = {
-      componentsName: {}
-    }
-  }
-
-  state.ecs6.entities[entityId].componentsName[componentName] = {
-    classId: state.ecs6.componentsWithId[id].classId,
-    id
-  }
+  preAttachEntityComponent(state, entityId, componentName, id)
 
   state.ecs6.events.push({
     method: 'attachEntityComponent',
@@ -154,12 +113,7 @@ export function proxyComponentCreated(
   componentName: string,
   classId: number
 ): void {
-  state.ecs6.componentsWithId[id] = {
-    componentName,
-    classId,
-    disposed: false,
-    json: '{}'
-  }
+  preComponentCreated(state, id, componentName, classId)
 
   state.ecs6.events.push({
     method: 'componentCreated',
@@ -199,7 +153,7 @@ export function proxyComponentUpdated(
   id: string,
   json: string
 ): void {
-  state.ecs6.componentsWithId[id].json = json
+  preComponentUpdated(state, id, json)
 
   state.ecs6.events.push({
     method: 'componentUpdated',
@@ -225,11 +179,7 @@ export function proxyUpdateEntityComponent(
   classId: number,
   json: string
 ): void {
-  if (!entityExists(state, entityId)) {
-    state.ecs6.entities[entityId] = {
-      componentsName: {}
-    }
-  }
+  preUpdateEntityComponent(state, entityId, componentName, classId, json)
 
   state.ecs6.events.push({
     method: 'updateEntityComponent',
@@ -282,3 +232,78 @@ function componentUpdated(id: string, json: string)
 function updateEntityComponent(entityId: string, componentName: string, classId: number, json: string): void
  * 
  */
+
+function preAttachEntityComponent(
+  state: AdaptationLayerState,
+  entityId: string,
+  componentName: string,
+  id: string
+): void {
+  if (state.ecs6.componentsWithId[id] === undefined) {
+    state.ecs6.componentsWithId[id] = {
+      componentName,
+      classId: 0,
+      disposed: false,
+      json: '{}'
+    }
+  }
+
+  if (state.ecs6.entities[entityId] === undefined) {
+    state.ecs6.entities[entityId] = {
+      componentsName: {}
+    }
+  }
+
+  state.ecs6.entities[entityId].componentsName[componentName] = {
+    classId: state.ecs6.componentsWithId[id].classId,
+    id
+  }
+}
+
+function preComponentCreated(
+  state: AdaptationLayerState,
+  id: string,
+  componentName: string,
+  classId: number
+): void {
+  state.ecs6.componentsWithId[id] = {
+    componentName,
+    classId,
+    disposed: false,
+    json: '{}'
+  }
+}
+
+function preComponentUpdated(
+  state: AdaptationLayerState,
+  id: string,
+  json: string
+): void {
+  let componentValue = state.ecs6.componentsWithId[id]
+  if (componentValue === undefined) {
+    state.ecs6.componentsWithId[id] = {
+      componentName: '',
+      classId: 0,
+      disposed: false,
+      json
+    }
+
+    componentValue = state.ecs6.componentsWithId[id]
+  }
+
+  componentValue.json = json
+}
+
+function preUpdateEntityComponent(
+  state: AdaptationLayerState,
+  entityId: string,
+  componentName: string,
+  classId: number,
+  json: string
+): void {
+  if (state.ecs6.entities[entityId] === undefined) {
+    state.ecs6.entities[entityId] = {
+      componentsName: {}
+    }
+  }
+}

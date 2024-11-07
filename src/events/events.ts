@@ -3,6 +3,9 @@ import { type AdaptationLayerState } from '../types'
 import {
   CameraMode,
   CameraType,
+  type Entity,
+  InputAction,
+  PointerEvents,
   PointerLock,
   Transform,
   engine,
@@ -45,6 +48,18 @@ function quaterniongCloseTo(a: Quaternion, b: Quaternion): boolean {
   )
 }
 
+function hasAssignAnyPointerEvent(entity: Entity): boolean {
+  const value = PointerEvents.getOrNull(entity)
+  if (value !== null && value.pointerEvents.length > 0) {
+    return (
+      value.pointerEvents[0].eventInfo === undefined ||
+      value.pointerEvents[0].eventInfo.button === InputAction.IA_ANY ||
+      value.pointerEvents[0].eventInfo.button === undefined
+    )
+  }
+  return false
+}
+
 export function updateEventSystem(state: AdaptationLayerState): void {
   if (state.subscribedEvents.has('positionChanged')) {
     // TODO: should we add y-offset 0.8?
@@ -54,7 +69,7 @@ export function updateEventSystem(state: AdaptationLayerState): void {
       Transform.getOrNull(engine.CameraEntity)?.position ?? Vector3.Zero()
     const needUpdate =
       state.eventState.lastPositionChanged === null ||
-      vector3CloseTo(
+      !vector3CloseTo(
         playerPosition,
         state.eventState.lastPositionChanged.position
       )
@@ -108,14 +123,39 @@ export function updateEventSystem(state: AdaptationLayerState): void {
         action.inputAction,
         action.eventType
       )
-      if (event !== undefined && event?.hit?.entityId === entity) {
-        sendEventToSDK6(state.onEventFunctions, {
-          type: 'uuidEvent',
-          data: {
-            uuid: action.uuid,
-            payload: convertPointerEventToSDK6(state, event)
-          } satisfies IEvents['uuidEvent']
-        })
+      if (event !== undefined) {
+        if (event?.hit?.entityId === entity) {
+          let send = true
+          if (hasAssignAnyPointerEvent(entity)) {
+            if (
+              event.button === InputAction.IA_WALK ||
+              event.button === InputAction.IA_BACKWARD ||
+              event.button === InputAction.IA_LEFT ||
+              event.button === InputAction.IA_RIGHT
+            ) {
+              send = false
+            }
+          }
+
+          send &&
+            sendEventToSDK6(state.onEventFunctions, {
+              type: 'uuidEvent',
+              data: {
+                uuid: action.uuid,
+                payload: convertPointerEventToSDK6(state, event)
+              } satisfies IEvents['uuidEvent']
+            })
+        } else if (event !== null) {
+          sendEventToSDK6(state.onEventFunctions, {
+            type: 'actionButtonEvent',
+            data: {
+              payload: convertPointerEventToSDK6(
+                state,
+                event
+              ) satisfies IEvents['actionButtonEvent']
+            }
+          })
+        }
       }
     }
   }

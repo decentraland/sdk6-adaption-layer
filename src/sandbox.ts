@@ -53,18 +53,10 @@ export async function customEval(code: string, context: any) {
     sandbox[key] = context[key]
   })
 
-  const thisGlobal: any = globalThis
-  if (thisGlobal.clearInterval !== undefined) {
-    sandbox.clearInterval = thisGlobal.clearInterval
-    sandbox.clearTimeout = thisGlobal.clearTimeout
-    sandbox.setInterval = thisGlobal.setInterval
-    sandbox.setTimeout = thisGlobal.setTimeout
-  } else {
-    sandbox.clearInterval = utils.timers.clearInterval
-    sandbox.clearTimeout = utils.timers.clearTimeout
-    sandbox.setInterval = utils.timers.setInterval
-    sandbox.setTimeout = utils.timers.setTimeout
-  }
+  sandbox.clearInterval = utils.timers.clearInterval
+  sandbox.clearTimeout = utils.timers.clearTimeout
+  sandbox.setInterval = utils.timers.setInterval
+  sandbox.setTimeout = utils.timers.setTimeout
 
   sandbox.XMLHttpRequest = XMLHttpRequest
   sandbox.TextEncoder = TextEncoder
@@ -73,6 +65,10 @@ export async function customEval(code: string, context: any) {
 
   sandbox.window = sandbox
   sandbox.self = sandbox
+
+  sandbox.fetch = async (url: string, init: any) => {
+    return await fetch(url, init)
+  }
 
   defer(() =>
     // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func

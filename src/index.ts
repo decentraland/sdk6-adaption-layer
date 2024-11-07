@@ -1,11 +1,10 @@
 import { TextDecoder } from 'text-encoding'
 import { readFile } from '~system/Runtime'
-import { createAdaptionLayer, state } from './runtime/DecentralandInterface'
+import { createAdaptionLayer } from './runtime/DecentralandInterface'
 import { customEval } from './sandbox'
 
 import * as sdk from '@dcl/sdk'
-import { engine } from '@dcl/sdk/ecs'
-import { pollEvents } from './events/observables'
+import { DEBUG_CONFIG } from './debug/config'
 
 async function getSceneJsonData(fileName: string): Promise<any> {
   const res = await readFile({ fileName })
@@ -25,6 +24,8 @@ async function getSceneCode(): Promise<{
   let fileName: string = ''
   if (developerMode) {
     console.log('SDK6 Adaption Layer - Developer Mode')
+    DEBUG_CONFIG.STATS_1_SECOND = true
+
     const devSceneJson = await getSceneJsonData('sdk6-tests/scene.json')
     fileName = `sdk6-tests/${devSceneJson.main}`
   } else {
@@ -44,9 +45,7 @@ const engineOnUpdate = sdkRef.onUpdate
 const engineOnStart = sdkRef.onStart
 
 export async function onUpdate(dt: number): Promise<void> {
-  engine.seal()
-  await engine.update(dt)
-  await pollEvents(state)
+  await engineOnUpdate(dt)
 }
 
 export async function onStart(): Promise<void> {
@@ -55,12 +54,18 @@ export async function onStart(): Promise<void> {
 
   const adaptionLayer = createAdaptionLayer(developerMode)
   await customEval(code, { dcl: adaptionLayer.decentralandInterface })
+
+  await onUpdate(0.0)
   adaptionLayer.flushEvents()
 
-  adaptionLayer.forceUpdate(0.0)
+  await engineOnUpdate(0.0)
   adaptionLayer.flushEvents()
+
+  adaptionLayer.start()
 
   await engineOnUpdate(0.0)
   adaptionLayer.forceUpdate(0.0)
   adaptionLayer.flushEvents()
+
+  await engineOnUpdate(0.0)
 }

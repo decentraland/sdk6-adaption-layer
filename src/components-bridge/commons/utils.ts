@@ -12,7 +12,10 @@ import {
   type AdaptationLayerState
 } from '../../types'
 import { Font } from '@dcl/sdk/ecs'
-import { type ECS6ComponentFont } from '~system/EngineApi'
+import {
+  type ECS6ComponentAudioClip,
+  type ECS6ComponentFont
+} from '~system/EngineApi'
 
 export function getColliderLayer(payload: any): number | undefined {
   if (
@@ -52,6 +55,9 @@ export function convertTexture(
 ): TextureUnion | undefined {
   if (textureEntityId !== undefined) {
     const textureData = state.ecs7.components[textureEntityId]
+    if (textureData === undefined) {
+      return undefined
+    }
     const texturePayload = textureData.data
     switch (textureData.classId) {
       case ECS6_CLASS_ID.TEXTURE:
@@ -103,8 +109,24 @@ export function convertInputAction(action: string | undefined): InputAction {
     case ECS6_ActionButton.ACTION_6:
       return InputAction.IA_ACTION_6
     default:
-      return InputAction.IA_ANY
+      return InputAction.IA_POINTER
+    // return InputAction.IA_ANY
   }
+}
+
+export function convertAudioClip(
+  state: AdaptationLayerState,
+  audioClipEntityId: any
+): ECS6ComponentAudioClip | undefined {
+  if (audioClipEntityId !== undefined) {
+    const audioClipData = state.ecs7.components[audioClipEntityId]
+    if (audioClipData === undefined) {
+      return undefined
+    }
+
+    return audioClipData.data
+  }
+  return undefined
 }
 
 export function convertFont(
@@ -113,6 +135,10 @@ export function convertFont(
 ): Font | undefined {
   if (fontEntityId !== undefined) {
     const fontData = state.ecs7.components[fontEntityId]
+    if (fontData === undefined) {
+      return undefined
+    }
+
     const fontPayload: ECS6ComponentFont = fontData.data
     switch (fontPayload.src) {
       case 'builtin:SF-UI-Text-Regular SDF':
