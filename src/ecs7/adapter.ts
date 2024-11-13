@@ -18,7 +18,9 @@ function ensureEcs6ComponentState(
   id: string
 ): Ecs6ComponentData {
   if (state.ecs7.components[id] === undefined) {
-    state.ecs7.components[id] = {}
+    state.ecs7.components[id] = {
+      entitiesId: new Set()
+    }
   }
   return state.ecs7.components[id]
 }
@@ -31,11 +33,11 @@ function ecs7AttachEntityComponent(
   id: string
 ): void {
   const component = ensureEcs6ComponentState(state, id)
-  component.entityId = entityId
+  component.entitiesId.add(entityId)
   if (component.classId !== undefined) {
     ecs7UpdateComponent(
       state,
-      component.entityId,
+      entityId,
       component.classId,
       component.data ?? {}
     )
@@ -52,7 +54,7 @@ function ecs7RemoveEntityComponent(
   for (const [_id, component] of Object.entries(state.ecs7.components)) {
     if (
       component !== undefined &&
-      component.entityId === entityId &&
+      component.entitiesId.has(entityId) &&
       component.componentName === componentName &&
       component.classId !== undefined
     ) {
@@ -117,6 +119,7 @@ function ecs7ComponentCreated(
   classId: number
 ): void {
   state.ecs7.components[id] = {
+    entitiesId: new Set(),
     classId,
     componentName
   }
@@ -125,8 +128,10 @@ function ecs7ComponentCreated(
 function ecs7ComponentDisposed(state: AdaptationLayerState, id: string): void {
   const component = state.ecs7.components[id]
   if (component !== undefined) {
-    if (component.entityId !== undefined && component.classId !== undefined) {
-      ecs7DeleteComponent(state, component.entityId, component.classId)
+    if (component.entitiesId !== undefined && component.classId !== undefined) {
+      for (const entityId of component.entitiesId) {
+        ecs7DeleteComponent(state, entityId, component.classId)
+      }
     }
     delete state.ecs7.components[id]
   }
@@ -140,13 +145,10 @@ function ecs7ComponentUpdated(
   const component = ensureEcs6ComponentState(state, id)
   component.data = JSON.parse(json)
   if (component.classId !== undefined) {
-    if (component.entityId !== undefined) {
-      ecs7UpdateComponent(
-        state,
-        component.entityId,
-        component.classId,
-        component.data
-      )
+    if (component.entitiesId.size > 0) {
+      for (const entityId of component.entitiesId) {
+        ecs7UpdateComponent(state, entityId, component.classId, component.data)
+      }
     } else {
       ecs7UpdateComponentWithoutEntityId(
         state,

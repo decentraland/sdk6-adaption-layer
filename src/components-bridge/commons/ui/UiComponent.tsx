@@ -261,7 +261,7 @@ export function Ecs6UiComponent(
             ),
             fontSize: (textValue.fontSize ?? 10) * zoom,
             font: convertUiFontFromFont(convertFont(state, textValue.font)),
-            value: textValue.value ?? '',
+            value: `${textValue.value}`,
             color: Color4.create(
               textValue.color?.r ?? 1.0,
               textValue.color?.g ?? 1.0,

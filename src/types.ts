@@ -70,7 +70,7 @@ export enum ECS6_CLASS_ID {
 
 export type Ecs6ComponentData = {
   classId?: number
-  entityId?: string
+  entitiesId: Set<EntityID>
   data?: any
   componentName?: string
 }

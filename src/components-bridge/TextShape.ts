@@ -14,7 +14,8 @@ function update(
   const ecs7Entity = sdk7EnsureEntity(state, ecs6EntityId)
 
   const value = TextShape.getOrCreateMutable(ecs7Entity)
-  value.text = payload.value ?? ''
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  value.text = payload.value !== undefined ? `${payload.value}` : ''
   value.outlineWidth = payload.outlineWidth
   value.outlineColor = payload.outlineColor
   value.textColor = {
@@ -27,7 +28,7 @@ function update(
         }
       : { r: 1, g: 1, b: 1 })
   }
-  value.fontSize = payload.fontSize
+  value.fontSize = Math.round((payload.fontSize ?? 13.3333) * 0.75)
   value.font = convertFont(state, payload.font)
   value.lineSpacing = parseInt(payload.lineSpacing ?? '') ?? 0
   value.lineCount = payload.lineCount
